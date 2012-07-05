@@ -76,7 +76,6 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 
 	public function setDataFor($arrValues)
 	{
-		// TODO: store to database.
 		$this->setTranslatedDataFor($arrValues, $this->getMetaNodel()->getActiveLanguage());
 	}
 
@@ -86,7 +85,21 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 
 	public function setTranslatedDataFor($arrValues, $strLangCode)
 	{
-		// TODO: Save values.
+		$strMetaModelTableName = $this->getMetaModel()->getTableName();
+		$strTableName = $this->get('select_table');
+		$strColNameId = $this->get('select_id');
+		$arrReturn = array();
+
+		if ($strTableName && $strColNameId)
+		{
+			$strColNameValue = $this->get('select_column');
+			$objDB = Database::getInstance();
+			$strQuery = sprintf('UPDATE %1$s SET %2$s=? WHERE %1$s.id=?', $strMetaModelTableName, $this->getColName());
+			foreach ($arrValues as $intItemId => $arrValue)
+			{
+				$objQuery = $objDB->prepare($strQuery)->execute($arrValue[$strColNameId], $intItemId);
+			}
+		}
 	}
 
 	/**
@@ -128,7 +141,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 	 */
 	public function unsetValueFor($arrIds, $strLangCode)
 	{
-		
+		// TODO: delete values.
 	}
 }
 
