@@ -20,12 +20,14 @@ if (!defined('TL_ROOT'))
 
 /**
  * This is the MetaModelAttribute class for handling translated select attributes.
- * 
+ *
  * @package	   MetaModels
  * @subpackage AttributeTranslatedSelect
  * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
  */
-class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implements IMetaModelAttributeTranslated
+class MetaModelAttributeTranslatedSelect
+extends MetaModelAttributeSelect
+implements IMetaModelAttributeTranslated
 {
 	/////////////////////////////////////////////////////////////////
 	// interface IMetaModelAttribute
