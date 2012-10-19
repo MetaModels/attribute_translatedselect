@@ -40,6 +40,16 @@ implements IMetaModelAttributeTranslated
 		));
 	}
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * Search the attribute in the current language.
+	 */
+	public function searchFor($strPattern)
+	{
+		return $this->searchForInLanguages($strPattern, $this->getMetaModel()->getActiveLanguage());
+	}
+
 	/////////////////////////////////////////////////////////////////
 	// interface IMetaModelAttributeComplex
 	/////////////////////////////////////////////////////////////////
@@ -84,6 +94,44 @@ implements IMetaModelAttributeTranslated
 	/////////////////////////////////////////////////////////////////
 	// interface IMetaModelAttributeTranslated
 	/////////////////////////////////////////////////////////////////
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * Search the attribute in the given languages.
+	 */
+	public function searchForInLanguages($strPattern, $arrLanguages = array())
+	{
+		$objDB = Database::getInstance();
+		$strTableNameId = $this->get('select_table');
+		$strColNameId = $this->get('select_id');
+		$strColNameLangCode = $this->get('select_langcolumn');
+		$arrReturn = array();
+
+		if ($strTableNameId && $strColNameId)
+		{
+			$strMetaModelTableName = $this->getMetaModel()->getTableName();
+			$strMetaModelTableNameId = $strMetaModelTableName.'_id';
+
+			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s LEFT JOIN %2$s ON ('.($arrLanguages ? '(%1$s.%7$s IN (%8$s))' : '').' AND (%1$s.%4$s=%2$s.%5$s)) WHERE %2$s.id IN (%6$s)',
+				$strTableNameId, // 1
+				$strMetaModelTableName, // 2
+				$strMetaModelTableNameId, // 3
+				$strColNameId, // 4
+				$this->getColName(), // 5
+				implode(',', $arrIds), //6
+				$strColNameLangCode, // 7
+				'\'' . implode('\',\'', $arrLanguages) . '\'' // 8
+			))
+			->execute($strLangCode);
+			while ($objValue->next())
+			{
+				$arrReturn[$objValue->$strMetaModelTableNameId] = $objValue->row();
+			}
+		}
+		return $arrReturn;
+	}
+
 
 	public function setTranslatedDataFor($arrValues, $strLangCode)
 	{
@@ -143,7 +191,8 @@ implements IMetaModelAttributeTranslated
 	 */
 	public function unsetValueFor($arrIds, $strLangCode)
 	{
-		// TODO: delete values.
+		// FIXME: unimplemented
+		throw new Exception('MetaModelAttributeTags::unsetValueFor() is not yet implemented, please do it or find someone who can!', 1);
 	}
 }
 
