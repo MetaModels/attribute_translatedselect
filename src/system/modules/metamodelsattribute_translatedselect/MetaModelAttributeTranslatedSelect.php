@@ -106,6 +106,7 @@ implements IMetaModelAttributeTranslated
 		$strTableNameId = $this->get('select_table');
 		$strColNameId = $this->get('select_id');
 		$strColNameLangCode = $this->get('select_langcolumn');
+		$strColValue = $this->get('select_column');
 		$arrReturn = array();
 
 		if ($strTableNameId && $strColNameId)
@@ -113,20 +114,20 @@ implements IMetaModelAttributeTranslated
 			$strMetaModelTableName = $this->getMetaModel()->getTableName();
 			$strMetaModelTableNameId = $strMetaModelTableName.'_id';
 
-			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s LEFT JOIN %2$s ON ('.($arrLanguages ? '(%1$s.%7$s IN (%8$s))' : '').' AND (%1$s.%4$s=%2$s.%5$s)) WHERE %2$s.id IN (%6$s)',
+			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s LEFT JOIN %2$s ON (%1$s.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(%1$s.%6$s IN (%7$s))' : '').' AND %1$s.%8$s LIKE ?',
 				$strTableNameId, // 1
 				$strMetaModelTableName, // 2
 				$strMetaModelTableNameId, // 3
 				$strColNameId, // 4
 				$this->getColName(), // 5
-				implode(',', $arrIds), //6
-				$strColNameLangCode, // 7
-				'\'' . implode('\',\'', $arrLanguages) . '\'' // 8
+				$strColNameLangCode, // 6
+				'\'' . implode('\',\'', $arrLanguages) . '\'', // 7
+				$strColValue // 8
 			))
-			->execute($strLangCode);
+			->execute(str_replace(array('*', '?'), array('%', '_'), $strPattern));
 			while ($objValue->next())
 			{
-				$arrReturn[$objValue->$strMetaModelTableNameId] = $objValue->row();
+				$arrReturn[] = $objValue->$strMetaModelTableNameId;
 			}
 		}
 		return $arrReturn;
