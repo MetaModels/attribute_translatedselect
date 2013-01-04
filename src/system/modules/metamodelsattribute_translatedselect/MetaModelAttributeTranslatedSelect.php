@@ -107,6 +107,7 @@ implements IMetaModelAttributeTranslated
 		$strColNameId = $this->get('select_id');
 		$strColNameLangCode = $this->get('select_langcolumn');
 		$strColValue = $this->get('select_column');
+		$strColAlias = $this->get('select_alias') ? $this->get('select_alias') : $strColNameId;
 		$arrReturn = array();
 
 		if ($strTableNameId && $strColNameId)
@@ -114,7 +115,9 @@ implements IMetaModelAttributeTranslated
 			$strMetaModelTableName = $this->getMetaModel()->getTableName();
 			$strMetaModelTableNameId = $strMetaModelTableName.'_id';
 
-			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s LEFT JOIN %2$s ON (%1$s.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(%1$s.%6$s IN (%7$s))' : '').' AND %1$s.%8$s LIKE ?',
+			$strPattern = str_replace(array('*', '?'), array('%', '_'), $strPattern);
+
+			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s LEFT JOIN %2$s ON (%1$s.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(%1$s.%6$s IN (%7$s))' : '').' AND (%1$s.%8$s LIKE ? OR %1$s.%9$s LIKE ?)',
 				$strTableNameId, // 1
 				$strMetaModelTableName, // 2
 				$strMetaModelTableNameId, // 3
@@ -122,9 +125,10 @@ implements IMetaModelAttributeTranslated
 				$this->getColName(), // 5
 				$strColNameLangCode, // 6
 				'\'' . implode('\',\'', $arrLanguages) . '\'', // 7
-				$strColValue // 8
+				$strColValue, // 8
+				$strColAlias // 9
 			))
-			->execute(str_replace(array('*', '?'), array('%', '_'), $strPattern));
+			->execute($strPattern, $strPattern);
 			while ($objValue->next())
 			{
 				$arrReturn[] = $objValue->$strMetaModelTableNameId;
