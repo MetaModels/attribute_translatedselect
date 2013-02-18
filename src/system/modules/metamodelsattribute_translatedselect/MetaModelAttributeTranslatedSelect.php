@@ -13,10 +13,6 @@
  * @license    LGPL.
  * @filesource
  */
-if (!defined('TL_ROOT'))
-{
-	die('You cannot access this file directly!');
-}
 
 /**
  * This is the MetaModelAttribute class for handling translated select attributes.
@@ -43,11 +39,97 @@ implements IMetaModelAttributeTranslated
 	/**
 	 * {@inheritdoc}
 	 *
+	 * Fetch filter options from foreign table.
+	 *
+	 */
+	public function getFilterOptions($arrIds, $usedOnly)
+	{
+		if (($arrIds !== NULL) && empty($arrIds))
+		{
+			return array();
+		}
+
+		$strTableName = $this->get('select_table');
+		$strColNameId = $this->get('select_id');
+		$strColNameLang = $this->get('select_langcolumn');
+		$strLangSet = sprintf('\'%s\',\'%s\'', $this->getMetaModel()->getActiveLanguage(), $this->getMetaModel()->getFallbackLanguage());
+
+		$arrReturn = array();
+
+		if ($strTableName && $strColNameId)
+		{
+			$strColNameValue = $this->get('select_column');
+			$strColNameAlias = $this->get('select_alias');
+			if (!$strColNameAlias)
+			{
+				$strColNameAlias = $strColNameId;
+			}
+			$objDB = Database::getInstance();
+			if ($arrIds)
+			{
+				$objValue = $objDB->prepare(sprintf('
+					SELECT %1$s.*
+					FROM %1$s
+					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
+					WHERE %3$s.id IN (%5$s)
+					AND %6$s IN (%7$s)
+					GROUP BY %1$s.%2$s',
+					$strTableName, // 1
+					$strColNameId, // 2
+					$this->getMetaModel()->getTableName(), // 3
+					$this->getColName(), // 4
+					implode(',', $arrIds), // 5
+					$strColNameLang, // 6
+					$strLangSet // 7
+				))
+				->execute($this->get('id'));
+			} else {
+				if ($usedOnly)
+				{
+					$strQuery = sprintf('SELECT %1$s.*
+					FROM %1$s
+					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
+					WHERE %5$s IN (%6$s)
+					GROUP BY %1$s.%2$s',
+					$strTableName,
+					$strColNameId, // 2
+					$this->getMetaModel()->getTableName(), // 3
+					$this->getColName(), // 4
+					$strColNameLang, // 5
+					$strLangSet // 6
+					);
+				} else {
+					$strQuery = sprintf('SELECT %1$s.*
+					FROM %1$s
+					WHERE %3$s IN (%4$s)
+					GROUP BY %1$s.%2$s
+					',
+					$strTableName, // 1
+					$strColNameId, // 2
+					$strColNameLang, // 3
+					$strLangSet // 4
+					);
+				}
+				$objValue = $objDB->prepare($strQuery)
+				->execute();
+			}
+
+			while ($objValue->next())
+			{
+				$arrReturn[$objValue->$strColNameAlias] = $objValue->$strColNameValue;
+			}
+		}
+		return $arrReturn;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
 	 * Search the attribute in the current language.
 	 */
 	public function searchFor($strPattern)
 	{
-		return $this->searchForInLanguages($strPattern, $this->getMetaModel()->getActiveLanguage());
+		return $this->searchForInLanguages($strPattern, array($this->getMetaModel()->getActiveLanguage()));
 	}
 
 	/////////////////////////////////////////////////////////////////
@@ -117,7 +199,7 @@ implements IMetaModelAttributeTranslated
 
 			$strPattern = str_replace(array('*', '?'), array('%', '_'), $strPattern);
 
-			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s LEFT JOIN %2$s ON (%1$s.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(%1$s.%6$s IN (%7$s))' : '').' AND (%1$s.%8$s LIKE ? OR %1$s.%9$s LIKE ?)',
+			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s RIGHT JOIN %2$s ON (%1$s.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(%1$s.%6$s IN (%7$s))' : '').' AND (%1$s.%8$s LIKE ? OR %1$s.%9$s LIKE ?)',
 				$strTableNameId, // 1
 				$strMetaModelTableName, // 2
 				$strMetaModelTableNameId, // 3
@@ -201,4 +283,3 @@ implements IMetaModelAttributeTranslated
 	}
 }
 
-?>
