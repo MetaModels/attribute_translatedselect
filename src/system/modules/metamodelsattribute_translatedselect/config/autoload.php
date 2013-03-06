@@ -10,13 +10,25 @@
  * @package     MetaModels
  * @subpackage  AttributeTranslatedSelect
  * @author      Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author      Andreas Isaak <info@andreas-isaak.de>
  * @copyright   The MetaModels team.
  * @license     LGPL.
  * @filesource
  */
 
-$GLOBALS['METAMODELS']['attributes']['translatedselect'] = array
+/**
+ * Register the classes
+ */
+ClassLoader::addClasses(array
 (
-	'class' => 'MetaModelAttributeTranslatedSelect',
-	'image' => 'system/modules/metamodelsattribute_translatedselect/html/select.png'
-);
+	'MetaModelAttributeTranslatedSelect'              => 'system/modules/metamodelsattribute_translatedselect/MetaModelAttributeTranslatedSelect.php',
+));
+
+
+/**
+ * Register the templates
+ */
+TemplateLoader::addFiles(array
+(
+	'mm_attr_translatedselect'              => 'system/modules/metamodelsattribute_translatedselect/templates',
+));
