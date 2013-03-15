@@ -198,7 +198,8 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 
 			$strPattern = str_replace(array('*', '?'), array('%', '_'), $strPattern);
 
-			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s RIGHT JOIN %2$s ON (%1$s.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(%1$s.%6$s IN (%7$s))' : '').' AND (%1$s.%8$s LIKE ? OR %1$s.%9$s LIKE ?)',
+			// using aliased join here to resolve issue #3 for normal select attributes (SQL error for self referencing table)
+			$objValue = $objDB->prepare(sprintf('SELECT sourceTable.*, %2$s.id AS %3$s FROM %1$s sourceTable RIGHT JOIN %2$s ON (sourceTable.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(sourceTable.%6$s IN (%7$s))' : '').' AND (sourceTable.%8$s LIKE ? OR sourceTable.%9$s LIKE ?)',
 				$strTableNameId, // 1
 				$strMetaModelTableName, // 2
 				$strMetaModelTableNameId, // 3
@@ -254,7 +255,8 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			$strMetaModelTableName = $this->getMetaModel()->getTableName();
 			$strMetaModelTableNameId = $strMetaModelTableName.'_id';
 
-			$objValue = $objDB->prepare(sprintf('SELECT %1$s.*, %2$s.id AS %3$s FROM %1$s LEFT JOIN %2$s ON ((%1$s.%7$s=?) AND (%1$s.%4$s=%2$s.%5$s)) WHERE %2$s.id IN (%6$s)',
+			// using aliased join here to resolve issue #3 for normal select attributes (SQL error for self referencing table)
+			$objValue = $objDB->prepare(sprintf('SELECT sourceTable.*, %2$s.id AS %3$s FROM %1$s sourceTable LEFT JOIN %2$s ON ((sourceTable.%7$s=?) AND (sourceTable.%4$s=%2$s.%5$s)) WHERE %2$s.id IN (%6$s)',
 				$strTableNameId, // 1
 				$strMetaModelTableName, // 2
 				$strMetaModelTableNameId, // 3
