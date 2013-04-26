@@ -53,6 +53,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 		$strColNameLang = $this->get('select_langcolumn');
 		$strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
 		$strLangSet = sprintf('\'%s\',\'%s\'', $this->getMetaModel()->getActiveLanguage(), $this->getMetaModel()->getFallbackLanguage());
+		$strSortColumn = $this->get('select_sorting') ? $this->get('select_sorting') : $strColNameId;
 
 		$arrReturn = array();
 
@@ -73,7 +74,8 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
 					WHERE %3$s.id IN (%5$s) %6$s
 					AND %7$s IN (%8$s)
-					GROUP BY %1$s.%2$s',
+					GROUP BY %1$s.%2$s
+					ORDER BY %9$s',
 					$strTableName, // 1
 					$strColNameId, // 2
 					$this->getMetaModel()->getTableName(), // 3
@@ -81,7 +83,8 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					implode(',', $arrIds), // 5
 					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //6
 					$strColNameLang, // 7
-					$strLangSet // 8
+					$strLangSet, // 8
+					$strSortColumn // 9
 				))
 				->execute($this->get('id'));
 			} else {
@@ -91,26 +94,29 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					FROM %1$s
 					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
 					WHERE %5$s IN (%6$s) %7$s
-					GROUP BY %1$s.%2$s',
+					GROUP BY %1$s.%2$s
+					ORDER BY %8$s',
 					$strTableName,
 					$strColNameId, // 2
 					$this->getMetaModel()->getTableName(), // 3
 					$this->getColName(), // 4
 					$strColNameLang, // 5
 					$strLangSet, // 6
-					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') //7
+					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //7
+					$strSortColumn // 8
 					);
 				} else {
 					$strQuery = sprintf('SELECT %1$s.*
 					FROM %1$s
 					WHERE %3$s IN (%4$s) %5$s
 					GROUP BY %1$s.%2$s
-					',
+					ORDER BY %6$s',
 					$strTableName, // 1
 					$strColNameId, // 2
 					$strColNameLang, // 3
 					$strLangSet, // 4
-					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') //5
+					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //5
+					$strSortColumn // 6
 					);
 				}
 				$objValue = $objDB->prepare($strQuery)
