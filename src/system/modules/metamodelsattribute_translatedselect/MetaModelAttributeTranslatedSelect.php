@@ -32,7 +32,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 	public function getAttributeSettingNames()
 	{
 		return array_merge(parent::getAttributeSettingNames(), array(
-			'select_langcolumn'
+			'select_langcolumn', 'select_srctable', 'select_srcsorting'
 		));
 	}
 
@@ -55,6 +55,8 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 		$strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
 		$strLangSet = sprintf('\'%s\',\'%s\'', $this->getMetaModel()->getActiveLanguage(), $this->getMetaModel()->getFallbackLanguage());
 		$strSortColumn = $this->get('select_sorting') ? $this->get('select_sorting') : $strColNameId;
+		$strTableNameSrc = ($this->get('select_srctable') ? $this->get('select_srctable') : false);
+		$strSortColumnSrc = ($this->get('select_srcsorting') ? $this->get('select_srcsorting') : 'id');
 
 		$arrReturn = array();
 
@@ -70,13 +72,14 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			if ($arrIds)
 			{
 				$objValue = $objDB->prepare(sprintf('
-					SELECT %1$s.*
+					SELECT %1$s.* %10$s
 					FROM %1$s
 					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
+					%11$s
 					WHERE %3$s.id IN (%5$s) %6$s
 					AND %7$s IN (%8$s)
 					GROUP BY %1$s.%2$s
-					ORDER BY %9$s',
+					ORDER BY %12$s %9$s',
 					$strTableName, // 1
 					$strColNameId, // 2
 					$this->getMetaModel()->getTableName(), // 3
@@ -85,18 +88,22 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //6
 					$strColNameLang, // 7
 					$strLangSet, // 8
-					$strSortColumn // 9
+					$strSortColumn, // 9
+					($strTableNameSrc ? ', '.$strTableNameSrc.'.'.$strSortColumnSrc.' as srcsorting' : false), //10
+					($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //11
+					($strTableNameSrc ? 'srcsorting,' : false) //12
 				))
 				->execute($this->get('id'));
 			} else {
 				if ($usedOnly)
 				{
-					$strQuery = sprintf('SELECT %1$s.*
+					$strQuery = sprintf('SELECT %1$s.* %9$s
 					FROM %1$s
 					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
+					%10$s
 					WHERE %5$s IN (%6$s) %7$s
 					GROUP BY %1$s.%2$s
-					ORDER BY %8$s',
+					ORDER BY %11$s %8$s',
 					$strTableName,
 					$strColNameId, // 2
 					$this->getMetaModel()->getTableName(), // 3
@@ -104,20 +111,28 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					$strColNameLang, // 5
 					$strLangSet, // 6
 					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //7
-					$strSortColumn // 8
+					$strSortColumn, // 8
+					($strTableNameSrc ? ', '.$strTableNameSrc.'.'.$strSortColumnSrc.' as srcsorting' : false), //9
+					($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //10
+					($strTableNameSrc ? 'srcsorting,' : false) //11
 					);
 				} else {
-					$strQuery = sprintf('SELECT %1$s.*
+					$strQuery = sprintf('SELECT %1$s.* %7$s
 					FROM %1$s
-					WHERE %3$s IN (%4$s) %5$s
+					%8$s
+					WHERE %3$s IN (%4$s)
+					%5$s
 					GROUP BY %1$s.%2$s
-					ORDER BY %6$s',
+					ORDER BY %9$s %6$s',
 					$strTableName, // 1
 					$strColNameId, // 2
 					$strColNameLang, // 3
 					$strLangSet, // 4
 					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //5
-					$strSortColumn // 6
+					$strSortColumn, // 6
+					($strTableNameSrc ? ', '.$strTableNameSrc.'.'.$strSortColumnSrc.' as srcsorting' : false), //7
+					($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //8
+					($strTableNameSrc ? 'srcsorting,' : false) //9
 					);
 				}
 				$objValue = $objDB->prepare($strQuery)
@@ -220,8 +235,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 				$strColNameLangCode, // 6
 				'\'' . implode('\',\'', $arrLanguages) . '\'', // 7
 				$strColValue, // 8
-				$strColAlias, // 9
-				($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') //10
+				$strColAlias // 9
 			))
 			->execute($strPattern, $strPattern);
 			while ($objValue->next())

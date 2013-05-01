@@ -10,6 +10,7 @@
  * @package     MetaModels
  * @subpackage  AttributeTranslatedSelect
  * @author      Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author      Christian de la Haye <service@delahaye.de>
  * @copyright   The MetaModels team.
  * @license     LGPL.
  * @filesource
@@ -21,7 +22,7 @@
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['metapalettes']['translatedselect extends select'] = array
 (
-	'+title' => array('select_langcolumn after select_id')
+	'+title' => array('select_langcolumn after select_id', 'select_srctable', 'select_srcsorting')
 );
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_langcolumn'] = array
@@ -37,6 +38,38 @@ $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_langcolumn'] = ar
 		'alwaysSave' => true,
 		'submitOnChange'=> true,
 		'tl_class'=>'w50',
+		'chosen' => 'true'
+	),
+);
+
+$GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srctable'] = array
+(
+	'label'                 => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable'],
+	'exclude'               => true,
+	'inputType'             => 'select',
+	'options_callback'      => array('TableMetaModelsAttributeSelect', 'getTableNames'),
+	'eval'                  => array
+	(
+		'includeBlankOption' => true,
+		'alwaysSave' => true,
+		'submitOnChange'=> true,
+		'tl_class' => 'w50',
+		'chosen' => 'true'
+	),
+);
+
+$GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srcsorting'] = array
+(
+	'label'                 => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting'],
+	'exclude'               => true,
+	'inputType'             => 'select',
+	'options_callback'      => array('TableMetaModelsAttributeTranslatedSelect', 'getSourceColumnNames'),
+	'eval'                  => array
+	(
+		'includeBlankOption' => true,
+		'alwaysSave' => true,
+		'submitOnChange'=> true,
+		'tl_class' => 'w50',
 		'chosen' => 'true'
 	),
 );
