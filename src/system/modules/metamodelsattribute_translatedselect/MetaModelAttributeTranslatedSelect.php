@@ -10,6 +10,7 @@
  * @package     MetaModels
  * @subpackage  AttributeTranslatedSelect
  * @author      Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author      Christian de la Haye <service@delahaye.de>
  * @copyright   The MetaModels team.
  * @license     LGPL.
  * @filesource
@@ -199,6 +200,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 		$strColNameLangCode = $this->get('select_langcolumn');
 		$strColValue = $this->get('select_column');
 		$strColAlias = $this->get('select_alias') ? $this->get('select_alias') : $strColNameId;
+		$strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
 		$arrReturn = array();
 
 		if ($strTableNameId && $strColNameId)
@@ -209,7 +211,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			$strPattern = str_replace(array('*', '?'), array('%', '_'), $strPattern);
 
 			// using aliased join here to resolve issue #3 for normal select attributes (SQL error for self referencing table)
-			$objValue = $objDB->prepare(sprintf('SELECT sourceTable.*, %2$s.id AS %3$s FROM %1$s sourceTable RIGHT JOIN %2$s ON (sourceTable.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(sourceTable.%6$s IN (%7$s))' : '').' AND (sourceTable.%8$s LIKE ? OR sourceTable.%9$s LIKE ?)',
+			$objValue = $objDB->prepare(sprintf('SELECT sourceTable.*, %2$s.id AS %3$s FROM %1$s sourceTable RIGHT JOIN %2$s ON (sourceTable.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(sourceTable.%6$s IN (%7$s))' : '').' AND (sourceTable.%8$s LIKE ? OR sourceTable.%9$s LIKE ?) %10$s',
 				$strTableNameId, // 1
 				$strMetaModelTableName, // 2
 				$strMetaModelTableNameId, // 3
@@ -218,7 +220,8 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 				$strColNameLangCode, // 6
 				'\'' . implode('\',\'', $arrLanguages) . '\'', // 7
 				$strColValue, // 8
-				$strColAlias // 9
+				$strColAlias, // 9
+				($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') //10
 			))
 			->execute($strPattern, $strPattern);
 			while ($objValue->next())
@@ -258,6 +261,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 		$strTableNameId = $this->get('select_table');
 		$strColNameId = $this->get('select_id');
 		$strColNameLangCode = $this->get('select_langcolumn');
+		$strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
 		$arrReturn = array();
 
 		if ($strTableNameId && $strColNameId)
@@ -266,14 +270,15 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			$strMetaModelTableNameId = $strMetaModelTableName.'_id';
 
 			// using aliased join here to resolve issue #3 for normal select attributes (SQL error for self referencing table)
-			$objValue = $objDB->prepare(sprintf('SELECT sourceTable.*, %2$s.id AS %3$s FROM %1$s sourceTable LEFT JOIN %2$s ON ((sourceTable.%7$s=?) AND (sourceTable.%4$s=%2$s.%5$s)) WHERE %2$s.id IN (%6$s)',
+			$objValue = $objDB->prepare(sprintf('SELECT sourceTable.*, %2$s.id AS %3$s FROM %1$s sourceTable LEFT JOIN %2$s ON ((sourceTable.%7$s=?) AND (sourceTable.%4$s=%2$s.%5$s)) WHERE %2$s.id IN (%6$s) %8$s',
 				$strTableNameId, // 1
 				$strMetaModelTableName, // 2
 				$strMetaModelTableNameId, // 3
 				$strColNameId, // 4
 				$this->getColName(), // 5
 				implode(',', $arrIds), //6
-				$strColNameLangCode // 7
+				$strColNameLangCode, // 7
+				($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') //8
 			))
 			->execute($strLangCode);
 			while ($objValue->next())
