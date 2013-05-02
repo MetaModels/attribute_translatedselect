@@ -1,0 +1,35 @@
+{
+	"name":"metamodels/attribute_translatedselect",
+	"description":"MetaModels attribute for translated selects",
+	"keywords":["contao", "metamodels", "attribute", "select", "translatable"],
+	"type":"contao-module",
+	"homepage":"http://now.metamodel.me/",
+	"license":"LGPL-3.0+",
+	"authors":[
+		{
+			"name":"Christian Schiffler",
+			"email":"c.schiffler@cyberspectrum.de",
+			"homepage":"http://www.cyberspectrum.de",
+			"role":"Developer"
+		}
+	],
+	"support":{
+		"email":"mail@metamodel.me",
+		"issues":"https://github.com/MetaModels/attribute_translatedselect/issues",
+		"wiki":"http://de.contaowiki.org/MetaModels",
+		"irc":"irc://irc.freenode.org/contao.mm",
+		"source":"https://github.com/MetaModels/attribute_translatedselect"
+	},
+	"require":{
+		"php":">=5.3",
+		"contao/core":"~2.11",
+		"metamodels/core":"~1"
+	},
+	"extra":{
+		"contao": {
+			"symlinks":{
+				"src/system/modules/metamodelsattribute_translatedselect":"system/modules/metamodelsattribute_translatedselect"
+			}
+		}
+	}
+}
