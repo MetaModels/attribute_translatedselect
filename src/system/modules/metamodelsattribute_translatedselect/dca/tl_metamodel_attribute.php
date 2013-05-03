@@ -22,7 +22,7 @@
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['metapalettes']['translatedselect extends select'] = array
 (
-	'+title' => array('select_langcolumn after select_id', 'select_srctable', 'select_srcsorting')
+	'+display' => array('select_langcolumn after select_id', 'select_srctable', 'select_srcsorting')
 );
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_langcolumn'] = array
