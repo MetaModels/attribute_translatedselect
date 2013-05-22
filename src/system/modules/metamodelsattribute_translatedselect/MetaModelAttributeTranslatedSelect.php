@@ -118,11 +118,13 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					);
 				} else {
 					$strQuery = sprintf('SELECT * 
-					FROM (SELECT %1$s.* %7$s FROM  %1$s
+					FROM (
+					SELECT %1$s.* %7$s FROM  %1$s
 					%8$s
-                                        WHERE %3$s IN (%4$s)
+					WHERE %3$s IN (%4$s)
 					%5$s
-                                        ORDER BY FIELD(%3$s,%4$s) %9$s %6$s) ordered					
+					ORDER BY FIELD(%3$s,%4$s) %9$s %6$s
+					) ordered					
 					GROUP BY %2$s',
 					$strTableName, // 1
 					$strColNameId, // 2
