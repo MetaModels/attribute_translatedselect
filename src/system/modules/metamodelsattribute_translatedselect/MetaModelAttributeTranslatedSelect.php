@@ -42,7 +42,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 	 * Fetch filter options from foreign table.
 	 *
 	 */
-	public function getFilterOptions($arrIds, $usedOnly)
+	public function getFilterOptions($arrIds, $usedOnly, &$arrCount = null)
 	{
 		if (($arrIds !== NULL) && empty($arrIds))
 		{
@@ -72,7 +72,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			if ($arrIds)
 			{
 				$objValue = $objDB->prepare(sprintf('
-					SELECT %1$s.* %10$s
+					SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.* %10$s
 					FROM %1$s
 					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
 					%11$s
@@ -97,7 +97,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			} else {
 				if ($usedOnly)
 				{
-					$strQuery = sprintf('SELECT %1$s.* %9$s
+					$strQuery = sprintf('SELECT COUNT(%1$s.%2$s) as mm_count,  %1$s.* %9$s
 					FROM %1$s
 					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
 					%10$s
@@ -117,7 +117,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					($strTableNameSrc ? 'srcsorting,' : false) //11
 					);
 				} else {
-					$strQuery = sprintf('SELECT %1$s.* %7$s
+					$strQuery = sprintf('SELECT COUNT(%1$s.%2$s) as mm_count %1$s.* %7$s
 					FROM %1$s
 					%8$s
 					WHERE %3$s IN (%4$s)
@@ -141,6 +141,11 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 
 			while ($objValue->next())
 			{
+				if(is_array($arrCount))
+				{
+					$arrCount[$objValue->$strColNameAlias] = $objValue->mm_count;
+				}
+				
 				$arrReturn[$objValue->$strColNameAlias] = $objValue->$strColNameValue;
 			}
 		}
