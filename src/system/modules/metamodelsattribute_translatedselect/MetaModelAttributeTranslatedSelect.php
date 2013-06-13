@@ -44,7 +44,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 		}
 		$arrIds = Database::getInstance()->prepare(sprintf('
 			SELECT %1$s.id FROM %1$s
-		        RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
+		        LEFT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
 		        WHERE %1$s.id IN (%5$s) 
 		        ORDER BY %3$s.%6$s %7$s',
 			$this->getMetaModel()->getTableName(), //1
