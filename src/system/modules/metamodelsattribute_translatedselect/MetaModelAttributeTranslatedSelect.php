@@ -117,22 +117,24 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					($strTableNameSrc ? 'srcsorting,' : false) //11
 					);
 				} else {
-					$strQuery = sprintf('SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.* %7$s
-					FROM %1$s
+					$strQuery = sprintf('SELECT * 
+					FROM (
+					SELECT %1$s.* %7$s FROM  %1$s
 					%8$s
 					WHERE %3$s IN (%4$s)
 					%5$s
-					GROUP BY %1$s.%2$s
-					ORDER BY %9$s %6$s',
+					ORDER BY FIELD(%3$s,%4$s) %9$s %6$s
+					) ordered					
+					GROUP BY %2$s',
 					$strTableName, // 1
 					$strColNameId, // 2
 					$strColNameLang, // 3
 					$strLangSet, // 4
 					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //5
-					$strSortColumn, // 6
+					', '.$strSortColumn, // 6
 					($strTableNameSrc ? ', '.$strTableNameSrc.'.'.$strSortColumnSrc.' as srcsorting' : false), //7
 					($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //8
-					($strTableNameSrc ? 'srcsorting,' : false) //9
+					($strTableNameSrc ?  ', srcsorting' : FALSE) //9
 					);
 				}
 				$objValue = $objDB->prepare($strQuery)
