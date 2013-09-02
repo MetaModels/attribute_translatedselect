@@ -15,8 +15,5 @@
  * @filesource
  */
 
-$GLOBALS['METAMODELS']['attributes']['translatedselect'] = array
-(
-	'class' => 'MetaModelAttributeTranslatedSelect',
-	'image' => 'system/modules/metamodelsattribute_translatedselect/html/select.png'
-);
+$GLOBALS['METAMODELS']['attributes']['translatedselect']['class'] = 'MetaModelAttributeTranslatedSelect';
+$GLOBALS['METAMODELS']['attributes']['translatedselect']['image'] = 'system/modules/metamodelsattribute_translatedselect/html/select.png';
