@@ -5,31 +5,31 @@
 	"type":"contao-module",
 	"homepage":"http://now.metamodel.me/",
 	"license":"LGPL-3.0+",
-    "authors":[
-        {
-            "name":"Christian Schiffler",
-            "email":"c.schiffler@cyberspectrum.de",
-            "homepage":"http://www.cyberspectrum.de",
-            "role":"Developer"
-        },
-        {
-            "name":"Andreas Isaak",
-            "email":"info@andreas-isaak.de",
-            "homepage":"http://www.andreas-isaak.de",
-            "role":"Developer"
-        },
-        {
-            "name":"Stefan Heimes",
-            "email":"stefan_heimes@hotmail.com",
-            "role":"Developer"
-        },
-        {
-            "name":"Christian de la Haye",
-            "email":"service@delahaye.de",
-            "homepage":"http://www.delahaye.de/",
-            "role":"Developer"
-        }
-    ],
+	"authors":[
+		{
+			"name":"Christian Schiffler",
+			"email":"c.schiffler@cyberspectrum.de",
+			"homepage":"http://www.cyberspectrum.de",
+			"role":"Developer"
+		},
+		{
+			"name":"Andreas Isaak",
+			"email":"info@andreas-isaak.de",
+			"homepage":"http://www.andreas-isaak.de",
+			"role":"Developer"
+		},
+		{
+			"name":"Stefan Heimes",
+			"email":"stefan_heimes@hotmail.com",
+			"role":"Developer"
+		},
+		{
+			"name":"Christian de la Haye",
+			"email":"service@delahaye.de",
+			"homepage":"http://www.delahaye.de/",
+			"role":"Developer"
+		}
+	],
 	"support":{
 		"email":"mail@metamodel.me",
 		"issues":"https://github.com/MetaModels/attribute_translatedselect/issues",
@@ -38,27 +38,27 @@
 		"source":"https://github.com/MetaModels/attribute_translatedselect"
 	},
 	"require":{
-        "php":">=5.3",
-        "contao/core":"~2.11",
-        "contao-community-alliance/composer-installer": "*",
-        "metamodels/core":"~1",
-        "metamodels/attribute_select":"*"
+		"php":">=5.3",
+		"contao/core":"~2.11",
+		"contao-community-alliance/composer-installer": "*",
+		"metamodels/core":"~1",
+		"metamodels/attribute_select":"*"
 	},
-    "require-dev": {
-        "metamodels/php-coding-standard":"dev-master",
-        "cyberspectrum/contao-toolbox": "dev-master"
-    },
+	"require-dev": {
+		"metamodels/php-coding-standard":"dev-master",
+		"cyberspectrum/contao-toolbox": "dev-master"
+	},
 	"extra":{
 		"contao": {
 			"symlinks":{
 				"src/system/modules/metamodelsattribute_translatedselect":"system/modules/metamodelsattribute_translatedselect"
 			},
-            "transifex": {
-                "project": "metamodels",
-                "prefix": "attribute_translatedselect-",
-                "languages_cto": "src/system/modules/metamodelsattribute_translatedselect/languages",
-                "languages_tx": ".tx"
-            }
+			"transifex": {
+				"project": "metamodels",
+				"prefix": "attribute_translatedselect-",
+				"languages_cto": "src/system/modules/metamodelsattribute_translatedselect/languages",
+				"languages_tx": ".tx"
+			}
 		},
 		"branch-alias": {
 			"dev-master": "1.0.x-dev"
