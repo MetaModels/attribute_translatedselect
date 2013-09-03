@@ -16,19 +16,25 @@
  * @filesource
  */
 
+namespace MetaModels\Attribute\TranslatedSelect;
+
+use MetaModels\Attribute\Select\Select;
+use MetaModels\Attribute\ITranslated;
+
 /**
  * This is the MetaModelAttribute class for handling translated select attributes.
  *
- * @package	   MetaModels
+ * @package    MetaModels
  * @subpackage AttributeTranslatedSelect
  * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
  */
-class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implements IMetaModelAttributeTranslated
+class TranslatedSelect
+	extends Select
+	implements ITranslated
 {
-	/////////////////////////////////////////////////////////////////
-	// interface IMetaModelAttribute
-	/////////////////////////////////////////////////////////////////
-
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getAttributeSettingNames()
 	{
 		return array_merge(parent::getAttributeSettingNames(), array(
@@ -40,7 +46,6 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 	 * {@inheritdoc}
 	 *
 	 * Fetch filter options from foreign table.
-	 *
 	 */
 	public function getFilterOptions($arrIds, $usedOnly, &$arrCount = null)
 	{
@@ -68,7 +73,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			{
 				$strColNameAlias = $strColNameId;
 			}
-			$objDB = Database::getInstance();
+			$objDB = \Database::getInstance();
 			if ($arrIds)
 			{
 				$objValue = $objDB->prepare(sprintf('
@@ -93,7 +98,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //11
 					($strTableNameSrc ? 'srcsorting,' : false) //12
 				))
-				->execute($this->get('id'));
+					->execute($this->get('id'));
 			} else {
 				if ($usedOnly)
 				{
@@ -104,17 +109,17 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					WHERE %5$s IN (%6$s) %7$s
 					GROUP BY %1$s.%2$s
 					ORDER BY %11$s %8$s',
-					$strTableName,
-					$strColNameId, // 2
-					$this->getMetaModel()->getTableName(), // 3
-					$this->getColName(), // 4
-					$strColNameLang, // 5
-					$strLangSet, // 6
-					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //7
-					$strSortColumn, // 8
-					($strTableNameSrc ? ', '.$strTableNameSrc.'.'.$strSortColumnSrc.' as srcsorting' : false), //9
-					($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //10
-					($strTableNameSrc ? 'srcsorting,' : false) //11
+						$strTableName,
+						$strColNameId, // 2
+						$this->getMetaModel()->getTableName(), // 3
+						$this->getColName(), // 4
+						$strColNameLang, // 5
+						$strLangSet, // 6
+						($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //7
+						$strSortColumn, // 8
+						($strTableNameSrc ? ', '.$strTableNameSrc.'.'.$strSortColumnSrc.' as srcsorting' : false), //9
+						($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //10
+						($strTableNameSrc ? 'srcsorting,' : false) //11
 					);
 				} else {
 					$strQuery = sprintf('SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.* %7$s
@@ -124,19 +129,19 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 					%5$s
 					GROUP BY %1$s.%2$s
 					ORDER BY %9$s %6$s',
-					$strTableName, // 1
-					$strColNameId, // 2
-					$strColNameLang, // 3
-					$strLangSet, // 4
-					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //5
-					$strSortColumn, // 6
-					($strTableNameSrc ? ', '.$strTableNameSrc.'.'.$strSortColumnSrc.' as srcsorting' : false), //7
-					($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //8
-					($strTableNameSrc ? 'srcsorting,' : false) //9
+						$strTableName, // 1
+						$strColNameId, // 2
+						$strColNameLang, // 3
+						$strLangSet, // 4
+						($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), //5
+						$strSortColumn, // 6
+						($strTableNameSrc ? ', '.$strTableNameSrc.'.'.$strSortColumnSrc.' as srcsorting' : false), //7
+						($strTableNameSrc ? 'JOIN '.$strTableNameSrc.' ON ('.$strTableNameSrc.'.id='.$strTableName.'.'.$strColNameId.')' : false), //8
+						($strTableNameSrc ? 'srcsorting,' : false) //9
 					);
 				}
 				$objValue = $objDB->prepare($strQuery)
-				->execute();
+					->execute();
 			}
 
 			while ($objValue->next())
@@ -145,7 +150,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 				{
 					$arrCount[$objValue->$strColNameAlias] = $objValue->mm_count;
 				}
-				
+
 				$arrReturn[$objValue->$strColNameAlias] = $objValue->$strColNameValue;
 			}
 		}
@@ -162,10 +167,9 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 		return $this->searchForInLanguages($strPattern, array($this->getMetaModel()->getActiveLanguage()));
 	}
 
-	/////////////////////////////////////////////////////////////////
-	// interface IMetaModelAttributeComplex
-	/////////////////////////////////////////////////////////////////
-
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getDataFor($arrIds)
 	{
 		$strActiveLanguage = $this->getMetaModel()->getActiveLanguage();
@@ -198,14 +202,13 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 		return $arrReturn;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function setDataFor($arrValues)
 	{
 		$this->setTranslatedDataFor($arrValues, $this->getMetaNodel()->getActiveLanguage());
 	}
-
-	/////////////////////////////////////////////////////////////////
-	// interface IMetaModelAttributeTranslated
-	/////////////////////////////////////////////////////////////////
 
 	/**
 	 * {@inheritdoc}
@@ -214,12 +217,13 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 	 */
 	public function searchForInLanguages($strPattern, $arrLanguages = array())
 	{
-		$objDB = Database::getInstance();
+		$objDB = \Database::getInstance();
 		$strTableNameId = $this->get('select_table');
 		$strColNameId = $this->get('select_id');
 		$strColNameLangCode = $this->get('select_langcolumn');
 		$strColValue = $this->get('select_column');
 		$strColAlias = $this->get('select_alias') ? $this->get('select_alias') : $strColNameId;
+		// TODO: this seems to be forgotten in implementation below. @delahaye plz check.
 		$strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
 		$arrReturn = array();
 
@@ -242,7 +246,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 				$strColValue, // 8
 				$strColAlias // 9
 			))
-			->execute($strPattern, $strPattern);
+				->execute($strPattern, $strPattern);
 			while ($objValue->next())
 			{
 				$arrReturn[] = $objValue->$strMetaModelTableNameId;
@@ -251,7 +255,9 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 		return $arrReturn;
 	}
 
-
+	/**
+	 * {@inheritdoc}
+	 */
 	public function setTranslatedDataFor($arrValues, $strLangCode)
 	{
 		$strMetaModelTableName = $this->getMetaModel()->getTableName();
@@ -261,22 +267,21 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 
 		if ($strTableName && $strColNameId)
 		{
-			$strColNameValue = $this->get('select_column');
-			$objDB = Database::getInstance();
+			$objDB = \Database::getInstance();
 			$strQuery = sprintf('UPDATE %1$s SET %2$s=? WHERE %1$s.id=?', $strMetaModelTableName, $this->getColName());
 			foreach ($arrValues as $intItemId => $arrValue)
 			{
-				$objQuery = $objDB->prepare($strQuery)->execute($arrValue[$strColNameId], $intItemId);
+				$objDB->prepare($strQuery)->execute($arrValue[$strColNameId], $intItemId);
 			}
 		}
 	}
 
 	/**
-	 * Get values for the given items in a certain language.
+	 * {@inheritdoc}
 	 */
 	public function getTranslatedDataFor($arrIds, $strLangCode)
 	{
-		$objDB = Database::getInstance();
+		$objDB = \Database::getInstance();
 		$strTableNameId = $this->get('select_table');
 		$strColNameId = $this->get('select_id');
 		$strColNameLangCode = $this->get('select_langcolumn');
@@ -299,7 +304,7 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 				$strColNameLangCode, // 7
 				($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') //8
 			))
-			->execute($strLangCode);
+				->execute($strLangCode);
 			while ($objValue->next())
 			{
 				$arrReturn[$objValue->$strMetaModelTableNameId] = $objValue->row();
@@ -309,11 +314,11 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 	}
 
 	/**
-	 * Remove values for items in a certain lanugage.
+	 * {@inheritdoc}
 	 */
 	public function unsetValueFor($arrIds, $strLangCode)
 	{
 		// FIXME: unimplemented
-		throw new Exception('MetaModelAttributeTags::unsetValueFor() is not yet implemented, please do it or find someone who can!', 1);
+		throw new \RuntimeException('MetaModelAttributeTags::unsetValueFor() is not yet implemented, please do it or find someone who can!', 1);
 	}
 }

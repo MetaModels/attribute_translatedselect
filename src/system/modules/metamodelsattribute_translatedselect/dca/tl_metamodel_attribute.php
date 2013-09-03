@@ -30,7 +30,7 @@ $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_langcolumn'] = ar
 	'label'                 => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn'],
 	'exclude'               => true,
 	'inputType'             => 'select',
-	'options_callback'      => array('TableMetaModelsAttributeSelect', 'getColumnNames'),
+	'options_callback'      => array('MetaModels\Dca\AttributeTranslatedSelect', 'getColumnNames'),
 	'eval'                  => array
 	(
 		'includeBlankOption' => true,
@@ -47,7 +47,7 @@ $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srctable'] = arra
 	'label'                 => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable'],
 	'exclude'               => true,
 	'inputType'             => 'select',
-	'options_callback'      => array('TableMetaModelsAttributeSelect', 'getTableNames'),
+	'options_callback'      => array('MetaModels\Dca\AttributeTranslatedSelect', 'getTableNames'),
 	'eval'                  => array
 	(
 		'includeBlankOption' => true,
@@ -63,7 +63,7 @@ $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srcsorting'] = ar
 	'label'                 => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting'],
 	'exclude'               => true,
 	'inputType'             => 'select',
-	'options_callback'      => array('TableMetaModelsAttributeTranslatedSelect', 'getSourceColumnNames'),
+	'options_callback'      => array('MetaModels\Dca\AttributeTranslatedSelect', 'getSourceColumnNames'),
 	'eval'                  => array
 	(
 		'includeBlankOption' => true,

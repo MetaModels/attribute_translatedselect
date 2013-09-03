@@ -22,6 +22,9 @@
  */
 ClassLoader::addClasses(array
 (
+	'MetaModels\Attribute\TranslatedSelect\TranslatedSelect' => 'system/modules/metamodelsattribute_translatedselect/MetaModels/Attribute/TranslatedSelect/TranslatedSelect.php',
+	'MetaModels\Dca\AttributeTranslatedSelect'               => 'system/modules/metamodelsattribute_translatedselect/MetaModels/Dca/AttributeTranslatedSelect.php',
+
 	'MetaModelAttributeTranslatedSelect'              => 'system/modules/metamodelsattribute_translatedselect/MetaModelAttributeTranslatedSelect.php',
 	'TableMetaModelsAttributeTranslatedSelect'        => 'system/modules/metamodelsattribute_translatedselect/TableMetaModelsAttributeTranslatedSelect.php',
 ));
