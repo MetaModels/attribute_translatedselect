@@ -240,7 +240,8 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 				$strColNameLangCode, // 6
 				'\'' . implode('\',\'', $arrLanguages) . '\'', // 7
 				$strColValue, // 8
-				$strColAlias // 9
+				$strColAlias, // 9
+				($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') //10
 			))
 			->execute($strPattern, $strPattern);
 			while ($objValue->next())
