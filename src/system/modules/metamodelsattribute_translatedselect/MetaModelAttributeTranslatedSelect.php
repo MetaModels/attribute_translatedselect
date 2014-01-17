@@ -231,7 +231,12 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			$strPattern = str_replace(array('*', '?'), array('%', '_'), $strPattern);
 
 			// using aliased join here to resolve issue #3 for normal select attributes (SQL error for self referencing table)
-			$objValue = $objDB->prepare(sprintf('SELECT sourceTable.*, %2$s.id AS %3$s FROM %1$s sourceTable RIGHT JOIN %2$s ON (sourceTable.%4$s=%2$s.%5$s) WHERE '.($arrLanguages ? '(sourceTable.%6$s IN (%7$s))' : '').' AND (sourceTable.%8$s LIKE ? OR sourceTable.%9$s LIKE ?) %10$s',
+			$objValue = $objDB->prepare(sprintf('
+			SELECT sourceTable.*, %2$s.id AS %3$s
+			FROM %1$s sourceTable
+			RIGHT JOIN %2$s ON (sourceTable.%4$s=%2$s.%5$s)
+			WHERE '.($arrLanguages ? '(sourceTable.%6$s IN (%7$s))' : '').'
+			AND (sourceTable.%8$s LIKE ? OR sourceTable.%9$s LIKE ?) %10$s',
 				$strTableNameId, // 1
 				$strMetaModelTableName, // 2
 				$strMetaModelTableNameId, // 3
@@ -241,9 +246,10 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 				'\'' . implode('\',\'', $arrLanguages) . '\'', // 7
 				$strColValue, // 8
 				$strColAlias, // 9
-				($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') //10
+				($strColNameWhere ? ('AND ' . $strColNameWhere) : '') // 10
 			))
 			->execute($strPattern, $strPattern);
+
 			while ($objValue->next())
 			{
 				$arrReturn[] = $objValue->$strMetaModelTableNameId;
