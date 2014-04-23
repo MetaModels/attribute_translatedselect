@@ -45,6 +45,43 @@ class TranslatedSelect
 	/**
 	 * {@inheritdoc}
 	 */
+	public function valueToWidget($varValue)
+	{
+		$strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
+		$strColNameAlias = $this->get('select_alias');
+		if (!$strColNameAlias)
+		{
+			$strColNameAlias = $this->get('select_id');
+		}
+
+		// Easy out, we have the correct language.
+		if ($varValue[$this->get('select_langcolumn')] == $this->getMetaModel()->getActiveLanguage())
+		{
+			return $varValue[$strColNameAlias];
+		}
+
+		// Translate to current language.
+		$objValue = \Database::getInstance()
+			->prepare(
+				sprintf(
+					'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s=?%4$s',
+					$this->get('select_table'),
+					$this->get('select_id'),
+					$this->get('select_langcolumn'),
+					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '')
+				)
+			)
+			->execute(
+				$varValue[$this->get('select_id')],
+				$this->getMetaModel()->getActiveLanguage()
+			);
+
+		return $objValue->$strColNameAlias;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function widgetToValue($varValue, $intId)
 	{
 		$objDB           = \Database::getInstance();
