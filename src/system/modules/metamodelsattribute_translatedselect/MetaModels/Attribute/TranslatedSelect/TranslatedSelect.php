@@ -44,6 +44,44 @@ class TranslatedSelect
 
 	/**
 	 * {@inheritdoc}
+	 */
+	public function widgetToValue($varValue, $intId)
+	{
+		$objDB           = \Database::getInstance();
+		$strColNameAlias = $this->get('select_alias');
+		$strColNameId    = $this->get('select_id');
+		$strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
+		$strColNameLang  = $this->get('select_langcolumn');
+		$strLangSet      = sprintf(
+			'\'%s\',\'%s\'',
+			$this->getMetaModel()->getActiveLanguage(),
+			$this->getMetaModel()->getFallbackLanguage()
+		);
+
+		if (!$strColNameAlias)
+		{
+			$strColNameAlias = $strColNameId;
+		}
+
+		// Lookup the id for this value.
+		$objValue = $objDB
+			->prepare(
+				sprintf(
+					'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s IN (%4$s)%5$s',
+					$this->get('select_table'),
+					$strColNameAlias,
+					$strColNameLang,
+					$strLangSet,
+					($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '')
+				)
+			)
+			->execute($varValue);
+
+		return $objValue->row();
+	}
+
+	/**
+	 * {@inheritdoc}
 	 *
 	 * Fetch filter options from foreign table.
 	 */
