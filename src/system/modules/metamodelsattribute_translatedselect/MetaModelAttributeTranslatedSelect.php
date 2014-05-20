@@ -157,10 +157,17 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			{
 				$objValue = $objDB->prepare(sprintf('
 					SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
-					FROM %1$s
-					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
-					WHERE %3$s.id IN (%5$s) %6$s
-					AND %7$s IN (%8$s)
+					FROM %3$s
+					LEFT JOIN %1$s ON (%1$s.id = (SELECT
+						%1$s.id
+						FROM %1$s
+						WHERE %7$s IN (%8$s)
+						AND (%1$s.%2$s=%3$s.%4$s)
+						%6$s
+						ORDER BY FIELD(%1$s.%7$s,%8$s)
+						LIMIT 1
+					))
+					WHERE %3$s.id IN (%5$s)
 					GROUP BY %1$s.%2$s
 					ORDER BY %10$s %9$s',
 					$strTableName, // 1
@@ -178,10 +185,18 @@ class MetaModelAttributeTranslatedSelect extends MetaModelAttributeSelect implem
 			} else {
 				if ($usedOnly)
 				{
-					$strQuery = sprintf('SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
-					FROM %1$s
-					RIGHT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
-					WHERE %5$s IN (%6$s) %7$s
+					$strQuery = sprintf('
+					SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
+					FROM %3$s
+					LEFT JOIN %1$s ON (%1$s.id = (SELECT
+						%1$s.id
+						FROM %1$s
+						WHERE %5$s IN (%6$s)
+						AND (%1$s.%2$s=%3$s.%4$s)
+						%7$s
+						ORDER BY FIELD(%1$s.%5$s,%6$s)
+						LIMIT 1
+					))
 					GROUP BY %1$s.%2$s
 					ORDER BY %9$s %8$s',
 						$strTableName,
