@@ -32,8 +32,7 @@ $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_langcolumn'] = ar
 	'inputType'              => 'select',
 	'eval'                   => array
 	(
-		'includeBlankOption' => true,
-		'doNotSaveEmpty'     => true,
+		'mandatory'          => true,
 		'alwaysSave'         => true,
 		'submitOnChange'     => true,
 		'tl_class'           => 'w50',
