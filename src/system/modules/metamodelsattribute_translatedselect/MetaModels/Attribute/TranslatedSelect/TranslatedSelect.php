@@ -443,10 +443,6 @@ class TranslatedSelect
 	 */
 	public function unsetValueFor($arrIds, $strLangCode)
 	{
-		// FIXME: unimplemented
-		throw new \RuntimeException(
-			'MetaModelAttributeTags::unsetValueFor() is not yet implemented, please do it or find someone who can!',
-			1
-		);
+		parent::unsetDataFor($arrIds);
 	}
 }
