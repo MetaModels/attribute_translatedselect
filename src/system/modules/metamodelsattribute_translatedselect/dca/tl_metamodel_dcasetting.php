@@ -23,10 +23,10 @@ $GLOBALS['TL_DCA']['tl_metamodel_dcasetting']['metasubselectpalettes']['attr_id'
 		'chosen',
 		'select_as_radio'
 	),
-	'functions'  => array(
+	'functions'    => array(
 		'mandatory'
 	),
-	'overview' => array(
+	'overview'     => array(
 		'filterable',
 		'searchable',
 		'sortable',
