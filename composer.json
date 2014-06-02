@@ -39,10 +39,10 @@
 	},
 	"require":{
 		"php":">=5.3",
-		"contao/core": ">=2.11,<4.0",
-		"contao-community-alliance/composer-plugin": "*",
 		"metamodels/core":"~2.0.0",
-		"metamodels/attribute_select":"*"
+		"contao/core": ">=2.11,<3.4",
+		"contao-community-alliance/composer-plugin": "~2.0",
+		"metamodels/attribute_select": "~2.0.0"
 	},
 	"require-dev": {
 		"metamodels/php-coding-standard":"dev-master",
