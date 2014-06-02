@@ -19,8 +19,6 @@ namespace MetaModels\DcGeneral\Events\Table\Attribute\Translated\Select;
 use ContaoCommunityAlliance\Contao\EventDispatcher\Event\CreateEventDispatcherEvent;
 use ContaoCommunityAlliance\DcGeneral\Contao\View\Contao2BackendView\Event\GetPropertyOptionsEvent;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
-use MetaModels\DcGeneral\Events\BaseSubscriber;
-use MetaModels\Factory;
 
 /**
  * Handle events for tl_metamodel_attribute.alias_fields.attr_id.
