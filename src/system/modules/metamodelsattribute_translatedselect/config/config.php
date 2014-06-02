@@ -15,8 +15,10 @@
  * @filesource
  */
 
-$GLOBALS['METAMODELS']['attributes']['translatedselect']['class'] = 'MetaModels\Attribute\TranslatedSelect\TranslatedSelect';
-$GLOBALS['METAMODELS']['attributes']['translatedselect']['image'] = 'system/modules/metamodelsattribute_translatedselect/html/select.png';
+$GLOBALS['METAMODELS']['attributes']['translatedselect']['class'] =
+	'MetaModels\Attribute\TranslatedSelect\TranslatedSelect';
+$GLOBALS['METAMODELS']['attributes']['translatedselect']['image'] =
+	'system/modules/metamodelsattribute_translatedselect/html/select.png';
 
 $GLOBALS['TL_EVENTS'][\ContaoCommunityAlliance\Contao\EventDispatcher\Event\CreateEventDispatcherEvent::NAME][] =
 	'MetaModels\DcGeneral\Events\Table\Attribute\Translated\Select\PropertyAttribute::registerEvents';
