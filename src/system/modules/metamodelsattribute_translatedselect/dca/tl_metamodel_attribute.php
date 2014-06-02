@@ -63,9 +63,9 @@ $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srcsorting'] = ar
 	'eval'                  => array
 	(
 		'includeBlankOption' => true,
-		'alwaysSave' => true,
-		'submitOnChange'=> true,
-		'tl_class' => 'w50',
-		'chosen' => 'true'
+		'alwaysSave'         => true,
+		'submitOnChange'     => true,
+		'tl_class'           => 'w50',
+		'chosen'             => 'true'
 	),
 );
