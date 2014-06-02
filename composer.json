@@ -52,7 +52,9 @@
 		"contao/core": "3.0.*"
 	},
 	"autoload": {
-		"classmap": ["src"]
+		"psr-0": {
+			"MetaModels": "src/system/modules/metamodelsattribute_translatedselect"
+		}
 	},
 	"extra":{
 		"contao": {
