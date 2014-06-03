@@ -66,7 +66,7 @@ class PropertyAttribute
 				GetPropertyOptionsEvent::NAME => __CLASS__ . '::getColumnNames',
 			),
 			$dispatcher,
-			array('tl_metamodel_attribute', 'tag_langcolumn')
+			array('tl_metamodel_attribute', 'select_langcolumn')
 		);
 
 		self::registerListeners(
@@ -74,7 +74,7 @@ class PropertyAttribute
 				GetPropertyOptionsEvent::NAME => __CLASS__ . '::getTableNames',
 			),
 			$dispatcher,
-			array('tl_metamodel_attribute', 'tag_srctable')
+			array('tl_metamodel_attribute', 'select_srctable')
 		);
 
 		self::registerListeners(
@@ -82,7 +82,7 @@ class PropertyAttribute
 				GetPropertyOptionsEvent::NAME => __CLASS__ . '::getSourceColumnNames',
 			),
 			$dispatcher,
-			array('tl_metamodel_attribute', 'tag_srcsorting')
+			array('tl_metamodel_attribute', 'select_srcsorting')
 		);
 	}
 
