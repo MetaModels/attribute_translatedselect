@@ -203,105 +203,104 @@ class TranslatedSelect extends Select implements ITranslated
         $strTableNameSrc  = $this->getSortingOverrideTable();
         $strSortColumnSrc = $this->getSortingOverrideColumn();
 
-        $arrReturn = array();
+        if (!($strTableName && $strColNameId)) {
+            return array();
+        }
 
-        if ($strTableName && $strColNameId) {
-            if ($strTableNameSrc) {
-                $orderBy = sprintf(
-                    'FIELD(%s.id, (SELECT GROUP_CONCAT(id ORDER BY %s) FROM %s)),',
-                    $strTableName,
-                    $strSortColumnSrc,
-                    $strTableNameSrc
-                );
-            } else {
-                $orderBy = '';
-            }
+        if ($strTableNameSrc) {
+            $orderBy = sprintf(
+                'FIELD(%s.id, (SELECT GROUP_CONCAT(id ORDER BY %s) FROM %s)),',
+                $strTableName,
+                $strSortColumnSrc,
+                $strTableNameSrc
+            );
+        } else {
+            $orderBy = '';
+        }
 
-            $objDB = \Database::getInstance();
-            if ($arrIds) {
-                $objValue = $objDB->prepare(sprintf(
+        $objDB = \Database::getInstance();
+        if ($arrIds) {
+            $objValue = $objDB->prepare(sprintf(
+                'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
+                FROM %3$s
+                LEFT JOIN %1$s ON (%1$s.id = (SELECT
+                    %1$s.id
+                    FROM %1$s
+                    WHERE %7$s IN (%8$s)
+                    AND (%1$s.%2$s=%3$s.%4$s)
+                    %6$s
+                    ORDER BY FIELD(%1$s.%7$s,%8$s)
+                    LIMIT 1
+                ))
+                WHERE %3$s.id IN (%5$s)
+                GROUP BY %1$s.%2$s
+                ORDER BY %10$s %9$s',
+                // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
+                $strTableName,                                           // 1
+                $strColNameId,                                           // 2
+                $this->getMetaModel()->getTableName(),                   // 3
+                $this->getColName(),                                     // 4
+                implode(',', $arrIds),                                   // 5
+                ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 6
+                $strColNameLang,                                         // 7
+                $strLangSet,                                             // 8
+                $strSortColumn,                                          // 9
+                $orderBy                                                 // 10
+                // @codingStandardsIgnoreEnd
+            ))
+                ->execute($this->get('id'));
+        } else {
+            if ($usedOnly) {
+                $strQuery = sprintf(
                     'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
                     FROM %3$s
                     LEFT JOIN %1$s ON (%1$s.id = (SELECT
                         %1$s.id
                         FROM %1$s
-                        WHERE %7$s IN (%8$s)
+                        WHERE %5$s IN (%6$s)
                         AND (%1$s.%2$s=%3$s.%4$s)
-                        %6$s
-                        ORDER BY FIELD(%1$s.%7$s,%8$s)
+                        %7$s
+                        ORDER BY FIELD(%1$s.%5$s,%6$s)
                         LIMIT 1
                     ))
-                    WHERE %3$s.id IN (%5$s)
                     GROUP BY %1$s.%2$s
-                    ORDER BY %10$s %9$s',
+                    ORDER BY %9$s %8$s',
                     // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
                     $strTableName,                                           // 1
                     $strColNameId,                                           // 2
                     $this->getMetaModel()->getTableName(),                   // 3
                     $this->getColName(),                                     // 4
-                    implode(',', $arrIds),                                   // 5
-                    ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 6
-                    $strColNameLang,                                         // 7
-                    $strLangSet,                                             // 8
-                    $strSortColumn,                                          // 9
-                    $orderBy                                                 // 10
+                    $strColNameLang,                                         // 5
+                    $strLangSet,                                             // 6
+                    ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 7
+                    $strSortColumn,                                          // 8
+                    $orderBy                                                 // 9
                     // @codingStandardsIgnoreEnd
-                ))
-                    ->execute($this->get('id'));
+                );
             } else {
-                if ($usedOnly) {
-                    $strQuery = sprintf(
-                        'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
-                        FROM %3$s
-                        LEFT JOIN %1$s ON (%1$s.id = (SELECT
-                            %1$s.id
-                            FROM %1$s
-                            WHERE %5$s IN (%6$s)
-                            AND (%1$s.%2$s=%3$s.%4$s)
-                            %7$s
-                            ORDER BY FIELD(%1$s.%5$s,%6$s)
-                            LIMIT 1
-                        ))
-                        GROUP BY %1$s.%2$s
-                        ORDER BY %9$s %8$s',
-                        // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
-                        $strTableName,                                           // 1
-                        $strColNameId,                                           // 2
-                        $this->getMetaModel()->getTableName(),                   // 3
-                        $this->getColName(),                                     // 4
-                        $strColNameLang,                                         // 5
-                        $strLangSet,                                             // 6
-                        ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 7
-                        $strSortColumn,                                          // 8
-                        $orderBy                                                 // 9
-                        // @codingStandardsIgnoreEnd
-                    );
-                } else {
-                    $strQuery = sprintf(
-                        'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
-                        FROM %1$s
-                        WHERE %3$s IN (%4$s)
-                        %5$s
-                        GROUP BY %1$s.%2$s
-                        ORDER BY %7$s %6$s',
-                        // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
-                        $strTableName,                                           // 1
-                        $strColNameId,                                           // 2
-                        $strColNameLang,                                         // 3
-                        $strLangSet,                                             // 4
-                        ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 5
-                        $strSortColumn,                                          // 6
-                        $orderBy                                                 // 7
-                        // @codingStandardsIgnoreEnd
-                    );
-                }
-                $objValue = $objDB->prepare($strQuery)
-                ->execute();
+                $strQuery = sprintf(
+                    'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
+                    FROM %1$s
+                    WHERE %3$s IN (%4$s)
+                    %5$s
+                    GROUP BY %1$s.%2$s
+                    ORDER BY %7$s %6$s',
+                    // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
+                    $strTableName,                                           // 1
+                    $strColNameId,                                           // 2
+                    $strColNameLang,                                         // 3
+                    $strLangSet,                                             // 4
+                    ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 5
+                    $strSortColumn,                                          // 6
+                    $orderBy                                                 // 7
+                    // @codingStandardsIgnoreEnd
+                );
             }
-
-            return $this->convertOptionsList($objValue, $this->getAliasColumn(), $this->getValueColumn(), $arrCount);
+            $objValue = $objDB->prepare($strQuery)
+            ->execute();
         }
-        return $arrReturn;
+
+        return $this->convertOptionsList($objValue, $this->getAliasColumn(), $this->getValueColumn(), $arrCount);
     }
 
     /**
