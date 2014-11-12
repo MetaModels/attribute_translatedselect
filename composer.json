@@ -45,10 +45,10 @@
 		"metamodels/attribute_select": "~2.0.0"
 	},
 	"require-dev": {
-		"metamodels/php-coding-standard": "*",
-		"pdepend/pdepend": "1.1.*",
-		"phpunit/phpunit": ">=3.7.10,<4-dev",
-		"phpmd/phpmd": "1.5"
+		"cyberspectrum/contao-toolbox": "dev-master",
+		"contao-community-alliance/build-system": "~1.0",
+		"contao-community-alliance/build-system-all-tasks": "~1.0",
+		"contao-community-alliance/coding-standard": "~1.0"
 	},
 	"conflict": {
 		"contao/core": "3.0.*"
