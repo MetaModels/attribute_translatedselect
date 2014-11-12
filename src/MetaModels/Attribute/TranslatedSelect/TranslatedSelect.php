@@ -356,7 +356,8 @@ class TranslatedSelect extends Select implements ITranslated
 
             $strPattern = str_replace(array('*', '?'), array('%', '_'), $strPattern);
 
-            // Using aliased join here to resolve issue #3 for normal select attributes (SQL error for self referencing table).
+            // Using aliased join here to resolve issue #3 for normal select attributes
+            // (SQL error for self referencing table).
             $objValue = $objDB->prepare(sprintf(
                 'SELECT sourceTable.*, %2$s.id AS %3$s
                 FROM %1$s sourceTable
