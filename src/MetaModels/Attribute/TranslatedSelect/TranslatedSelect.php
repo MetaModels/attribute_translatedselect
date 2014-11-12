@@ -206,12 +206,6 @@ class TranslatedSelect extends Select implements ITranslated
         $arrReturn = array();
 
         if ($strTableName && $strColNameId) {
-            $strColNameValue = $this->getValueColumn();
-            $strColNameAlias = $this->getAliasColumn();
-            if (!$strColNameAlias) {
-                $strColNameAlias = $strColNameId;
-            }
-
             if ($strTableNameSrc) {
                 $orderBy = sprintf(
                     'FIELD(%s.id, (SELECT GROUP_CONCAT(id ORDER BY %s) FROM %s)),',
@@ -305,13 +299,7 @@ class TranslatedSelect extends Select implements ITranslated
                 ->execute();
             }
 
-            while ($objValue->next()) {
-                if (is_array($arrCount)) {
-                    $arrCount[$objValue->$strColNameAlias] = $objValue->mm_count;
-                }
-
-                $arrReturn[$objValue->$strColNameAlias] = $objValue->$strColNameValue;
-            }
+            return $this->convertOptionsList($objValue, $this->getAliasColumn(), $this->getValueColumn(), $arrCount);
         }
         return $arrReturn;
     }
