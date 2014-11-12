@@ -31,18 +31,48 @@ use MetaModels\Attribute\ITranslated;
 class TranslatedSelect extends Select implements ITranslated
 {
     /**
+     * Determine the correct language column to use.
+     *
+     * @return string
+     */
+    protected function getLanguageColumn()
+    {
+        return $this->get('select_langcolumn');
+    }
+
+    /**
+     * Determine the correct sorting table to use.
+     *
+     * @return string
+     */
+    protected function getSortingOverrideTable()
+    {
+        return $this->get('select_srctable') ?: false;
+    }
+
+    /**
+     * Determine the correct sorting column to use.
+     *
+     * @return string
+     */
+    protected function getSortingOverrideColumn()
+    {
+        return $this->get('select_srcsorting') ?: 'id';
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function sortIds($arrIds, $strDirection)
     {
-        $strTableName = $this->get('select_srctable');
+        $strTableName = $this->getSortingOverrideTable();
         if (!$strTableName) {
-            $strTableName  = $this->get('select_table');
-            $strColNameId  = $this->get('select_id');
-            $strSortColumn = $this->get('select_sorting') ? $this->get('select_sorting') : $strColNameId;
+            $strTableName  = $this->getSelectSource();
+            $strColNameId  = $this->getIdColumn();
+            $strSortColumn = $this->getSortingColumn();
         } else {
             $strColNameId  = 'id';
-            $strSortColumn = ($this->get('select_srcsorting') ? $this->get('select_srcsorting') : 'id');
+            $strSortColumn = $this->getSortingOverrideColumn();
         }
         $arrIds = \Database::getInstance()
             ->prepare(
@@ -82,14 +112,14 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function valueToWidget($varValue)
     {
-        $strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
-        $strColNameAlias = $this->get('select_alias');
+        $strColNameWhere = $this->getAdditionalWhere();
+        $strColNameAlias = $this->getAliasColumn();
         if (!$strColNameAlias) {
-            $strColNameAlias = $this->get('select_id');
+            $strColNameAlias = $this->getIdColumn();
         }
 
         // Easy out, we have the correct language.
-        if ($varValue[$this->get('select_langcolumn')] == $this->getMetaModel()->getActiveLanguage()) {
+        if ($varValue[$this->getLanguageColumn()] == $this->getMetaModel()->getActiveLanguage()) {
             return $varValue[$strColNameAlias];
         }
 
@@ -98,14 +128,14 @@ class TranslatedSelect extends Select implements ITranslated
             ->prepare(
                 sprintf(
                     'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s=?%4$s',
-                    $this->get('select_table'),
-                    $this->get('select_id'),
-                    $this->get('select_langcolumn'),
+                    $this->getSelectSource(),
+                    $this->getIdColumn(),
+                    $this->getLanguageColumn(),
                     ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '')
                 )
             )
             ->execute(
-                $varValue[$this->get('select_id')],
+                $varValue[$this->getIdColumn()],
                 $this->getMetaModel()->getActiveLanguage()
             );
 
@@ -118,10 +148,10 @@ class TranslatedSelect extends Select implements ITranslated
     public function widgetToValue($varValue, $intId)
     {
         $objDB           = \Database::getInstance();
-        $strColNameAlias = $this->get('select_alias');
-        $strColNameId    = $this->get('select_id');
-        $strColNameWhere = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
-        $strColNameLang  = $this->get('select_langcolumn');
+        $strColNameAlias = $this->getAliasColumn();
+        $strColNameId    = $this->getIdColumn();
+        $strColNameWhere = $this->getAdditionalWhere();
+        $strColNameLang  = $this->getLanguageColumn();
         $strLangSet      = sprintf(
             '\'%s\',\'%s\'',
             $this->getMetaModel()->getActiveLanguage(),
@@ -137,7 +167,7 @@ class TranslatedSelect extends Select implements ITranslated
             ->prepare(
                 sprintf(
                     'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s IN (%4$s)%5$s',
-                    $this->get('select_table'),
+                    $this->getSelectSource(),
                     $strColNameAlias,
                     $strColNameLang,
                     $strLangSet,
@@ -160,24 +190,24 @@ class TranslatedSelect extends Select implements ITranslated
             return array();
         }
 
-        $strTableName     = $this->get('select_table');
-        $strColNameId     = $this->get('select_id');
-        $strColNameLang   = $this->get('select_langcolumn');
-        $strColNameWhere  = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
+        $strTableName     = $this->getSelectSource();
+        $strColNameId     = $this->getIdColumn();
+        $strColNameLang   = $this->getLanguageColumn();
+        $strColNameWhere  = $this->getAdditionalWhere();
         $strLangSet       = sprintf(
             '\'%s\',\'%s\'',
             $this->getMetaModel()->getActiveLanguage(),
             $this->getMetaModel()->getFallbackLanguage()
         );
-        $strSortColumn    = $this->get('select_sorting') ? $this->get('select_sorting') : $strColNameId;
-        $strTableNameSrc  = ($this->get('select_srctable') ? $this->get('select_srctable') : false);
-        $strSortColumnSrc = ($this->get('select_srcsorting') ? $this->get('select_srcsorting') : 'id');
+        $strSortColumn    = $this->getSortingColumn();
+        $strTableNameSrc  = $this->getSortingOverrideTable();
+        $strSortColumnSrc = $this->getSortingOverrideColumn();
 
         $arrReturn = array();
 
         if ($strTableName && $strColNameId) {
-            $strColNameValue = $this->get('select_column');
-            $strColNameAlias = $this->get('select_alias');
+            $strColNameValue = $this->getValueColumn();
+            $strColNameAlias = $this->getAliasColumn();
             if (!$strColNameAlias) {
                 $strColNameAlias = $strColNameId;
             }
@@ -342,12 +372,12 @@ class TranslatedSelect extends Select implements ITranslated
     public function searchForInLanguages($strPattern, $arrLanguages = array())
     {
         $objDB              = \Database::getInstance();
-        $strTableNameId     = $this->get('select_table');
-        $strColNameId       = $this->get('select_id');
-        $strColNameLangCode = $this->get('select_langcolumn');
-        $strColValue        = $this->get('select_column');
-        $strColAlias        = $this->get('select_alias') ? $this->get('select_alias') : $strColNameId;
-        $strColNameWhere    = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
+        $strTableNameId     = $this->getSelectSource();
+        $strColNameId       = $this->getIdColumn();
+        $strColNameLangCode = $this->getLanguageColumn();
+        $strColValue        = $this->getValueColumn();
+        $strColAlias        = $this->getAliasColumn();
+        $strColNameWhere    = $this->getAdditionalWhere();
         $arrReturn          = array();
 
         if ($strTableNameId && $strColNameId) {
@@ -392,8 +422,8 @@ class TranslatedSelect extends Select implements ITranslated
     public function setTranslatedDataFor($arrValues, $strLangCode)
     {
         $strMetaModelTableName = $this->getMetaModel()->getTableName();
-        $strTableName          = $this->get('select_table');
-        $strColNameId          = $this->get('select_id');
+        $strTableName          = $this->getSelectSource();
+        $strColNameId          = $this->getIdColumn();
 
         if ($strTableName && $strColNameId) {
             $objDB    = \Database::getInstance();
@@ -415,10 +445,10 @@ class TranslatedSelect extends Select implements ITranslated
     public function getTranslatedDataFor($arrIds, $strLangCode)
     {
         $objDB              = \Database::getInstance();
-        $strTableNameId     = $this->get('select_table');
-        $strColNameId       = $this->get('select_id');
-        $strColNameLangCode = $this->get('select_langcolumn');
-        $strColNameWhere    = ($this->get('select_where') ? html_entity_decode($this->get('select_where')) : false);
+        $strTableNameId     = $this->getSelectSource();
+        $strColNameId       = $this->getIdColumn();
+        $strColNameLangCode = $this->getLanguageColumn();
+        $strColNameWhere    = $this->getAdditionalWhere();
         $arrReturn          = array();
 
         if ($strTableNameId && $strColNameId) {
