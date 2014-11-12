@@ -22,50 +22,50 @@
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['metapalettes']['translatedselect extends select'] = array
 (
-	'+display' => array('select_langcolumn after select_id', 'select_srctable', 'select_srcsorting')
+    '+display' => array('select_langcolumn after select_id', 'select_srctable', 'select_srcsorting')
 );
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_langcolumn'] = array
 (
-	'label'                  => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn'],
-	'exclude'                => true,
-	'inputType'              => 'select',
-	'eval'                   => array
-	(
-		'mandatory'          => true,
-		'alwaysSave'         => true,
-		'submitOnChange'     => true,
-		'tl_class'           => 'w50',
-		'chosen'             => 'true'
-	),
+    'label'                  => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn'],
+    'exclude'                => true,
+    'inputType'              => 'select',
+    'eval'                   => array
+    (
+        'mandatory'          => true,
+        'alwaysSave'         => true,
+        'submitOnChange'     => true,
+        'tl_class'           => 'w50',
+        'chosen'             => 'true'
+    ),
 );
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srctable'] = array
 (
-	'label'                  => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable'],
-	'exclude'                => true,
-	'inputType'              => 'select',
-	'eval'                   => array
-	(
-		'includeBlankOption' => true,
-		'alwaysSave'         => true,
-		'submitOnChange'     => true,
-		'tl_class'           => 'w50',
-		'chosen'             => 'true'
-	),
+    'label'                  => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable'],
+    'exclude'                => true,
+    'inputType'              => 'select',
+    'eval'                   => array
+    (
+        'includeBlankOption' => true,
+        'alwaysSave'         => true,
+        'submitOnChange'     => true,
+        'tl_class'           => 'w50',
+        'chosen'             => 'true'
+    ),
 );
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srcsorting'] = array
 (
-	'label'                 => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting'],
-	'exclude'               => true,
-	'inputType'             => 'select',
-	'eval'                  => array
-	(
-		'includeBlankOption' => true,
-		'alwaysSave'         => true,
-		'submitOnChange'     => true,
-		'tl_class'           => 'w50',
-		'chosen'             => 'true'
-	),
+    'label'                 => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting'],
+    'exclude'               => true,
+    'inputType'             => 'select',
+    'eval'                  => array
+    (
+        'includeBlankOption' => true,
+        'alwaysSave'         => true,
+        'submitOnChange'     => true,
+        'tl_class'           => 'w50',
+        'chosen'             => 'true'
+    ),
 );

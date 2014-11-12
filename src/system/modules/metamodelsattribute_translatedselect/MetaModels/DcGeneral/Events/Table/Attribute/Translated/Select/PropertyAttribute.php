@@ -24,96 +24,96 @@ use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
  * Handle events for tl_metamodel_attribute.alias_fields.attr_id.
  */
 class PropertyAttribute
-	extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\PropertyAttribute
+    extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\PropertyAttribute
 {
-	/**
-	 * Register all listeners to handle creation of a data container.
-	 *
-	 * @param CreateEventDispatcherEvent $event The event.
-	 *
-	 * @return void
-	 */
-	public static function registerEvents(CreateEventDispatcherEvent $event)
-	{
-		$dispatcher = $event->getEventDispatcher();
+    /**
+     * Register all listeners to handle creation of a data container.
+     *
+     * @param CreateEventDispatcherEvent $event The event.
+     *
+     * @return void
+     */
+    public static function registerEvents(CreateEventDispatcherEvent $event)
+    {
+        $dispatcher = $event->getEventDispatcher();
 
-		self::registerBuildDataDefinitionFor(
-			'tl_metamodel_attribute',
-			$dispatcher,
-			__CLASS__ . '::registerTableMetaModelAttributeEvents'
-		);
-	}
+        self::registerBuildDataDefinitionFor(
+            'tl_metamodel_attribute',
+            $dispatcher,
+            __CLASS__ . '::registerTableMetaModelAttributeEvents'
+        );
+    }
 
-	/**
-	 * Register the events for table tl_metamodel_attribute.
-	 *
-	 * @param BuildDataDefinitionEvent $event The event being processed.
-	 *
-	 * @return void
-	 */
-	public static function registerTableMetaModelAttributeEvents(BuildDataDefinitionEvent $event)
-	{
-		static $registered;
-		if ($registered)
-		{
-			return;
-		}
-		$registered = true;
-		$dispatcher = $event->getDispatcher();
+    /**
+     * Register the events for table tl_metamodel_attribute.
+     *
+     * @param BuildDataDefinitionEvent $event The event being processed.
+     *
+     * @return void
+     */
+    public static function registerTableMetaModelAttributeEvents(BuildDataDefinitionEvent $event)
+    {
+        static $registered;
+        if ($registered)
+        {
+            return;
+        }
+        $registered = true;
+        $dispatcher = $event->getDispatcher();
 
-		self::registerListeners(
-			array(
-				GetPropertyOptionsEvent::NAME => __CLASS__ . '::getColumnNames',
-			),
-			$dispatcher,
-			array('tl_metamodel_attribute', 'select_langcolumn')
-		);
+        self::registerListeners(
+            array(
+                GetPropertyOptionsEvent::NAME => __CLASS__ . '::getColumnNames',
+            ),
+            $dispatcher,
+            array('tl_metamodel_attribute', 'select_langcolumn')
+        );
 
-		self::registerListeners(
-			array(
-				GetPropertyOptionsEvent::NAME => __CLASS__ . '::getTableNames',
-			),
-			$dispatcher,
-			array('tl_metamodel_attribute', 'select_srctable')
-		);
+        self::registerListeners(
+            array(
+                GetPropertyOptionsEvent::NAME => __CLASS__ . '::getTableNames',
+            ),
+            $dispatcher,
+            array('tl_metamodel_attribute', 'select_srctable')
+        );
 
-		self::registerListeners(
-			array(
-				GetPropertyOptionsEvent::NAME => __CLASS__ . '::getSourceColumnNames',
-			),
-			$dispatcher,
-			array('tl_metamodel_attribute', 'select_srcsorting')
-		);
-	}
+        self::registerListeners(
+            array(
+                GetPropertyOptionsEvent::NAME => __CLASS__ . '::getSourceColumnNames',
+            ),
+            $dispatcher,
+            array('tl_metamodel_attribute', 'select_srcsorting')
+        );
+    }
 
-	/**
-	 * Retrieve all column names of type int for the current selected table.
-	 *
-	 * @param GetPropertyOptionsEvent $event The event.
-	 *
-	 * @return void
-	 */
-	public static function getSourceColumnNames(GetPropertyOptionsEvent $event)
-	{
-		$model   = $event->getModel();
-		$table   = $model->getProperty('tag_srctable');
-		$databse = \Database::getInstance();
+    /**
+     * Retrieve all column names of type int for the current selected table.
+     *
+     * @param GetPropertyOptionsEvent $event The event.
+     *
+     * @return void
+     */
+    public static function getSourceColumnNames(GetPropertyOptionsEvent $event)
+    {
+        $model   = $event->getModel();
+        $table   = $model->getProperty('tag_srctable');
+        $databse = \Database::getInstance();
 
-		if (!$table || !$databse->tableExists($table))
-		{
-			return;
-		}
+        if (!$table || !$databse->tableExists($table))
+        {
+            return;
+        }
 
-		$result = array();
+        $result = array();
 
-		foreach ($databse->listFields($table) as $arrInfo)
-		{
-			if ($arrInfo['type'] != 'index')
-			{
-				$result[$arrInfo['name']] = $arrInfo['name'];
-			}
-		}
+        foreach ($databse->listFields($table) as $arrInfo)
+        {
+            if ($arrInfo['type'] != 'index')
+            {
+                $result[$arrInfo['name']] = $arrInfo['name'];
+            }
+        }
 
-		$event->setOptions($result);
-	}
+        $event->setOptions($result);
+    }
 }

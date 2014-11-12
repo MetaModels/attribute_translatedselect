@@ -22,5 +22,5 @@
  */
 TemplateLoader::addFiles(array
 (
-	'mm_attr_translatedselect'              => 'system/modules/metamodelsattribute_translatedselect/templates',
+    'mm_attr_translatedselect'              => 'system/modules/metamodelsattribute_translatedselect/templates',
 ));
