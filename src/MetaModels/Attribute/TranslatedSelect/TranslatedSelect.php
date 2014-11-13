@@ -200,6 +200,81 @@ class TranslatedSelect extends Select implements ITranslated
 
     /**
      * {@inheritdoc}
+     */
+    public function getFilterOptionsForUsedOnly($usedOnly)
+    {
+        $tableName   = $this->getSelectSource();
+        $idColumn    = $this->getIdColumn();
+        $langColumn  = $this->getLanguageColumn();
+        $addWhere    = $this->getAdditionalWhere();
+        $firstOrder  = $this->getFilterOptionsOrderBy();
+        $secondOrder = $this->getSortingColumn();
+        $langSet     = sprintf(
+            '\'%s\',\'%s\'',
+            $this->getMetaModel()->getActiveLanguage(),
+            $this->getMetaModel()->getFallbackLanguage()
+        );
+
+        if ($usedOnly) {
+            return $this
+                ->getDatabase()
+                ->prepare(
+                    sprintf(
+                        'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
+                            FROM %3$s
+                            LEFT JOIN %1$s ON (%1$s.id = (SELECT
+                                %1$s.id
+                                FROM %1$s
+                                WHERE %5$s IN (%6$s)
+                                AND (%1$s.%2$s=%3$s.%4$s)
+                                %7$s
+                                ORDER BY FIELD(%1$s.%5$s,%6$s)
+                                LIMIT 1
+                            ))
+                            GROUP BY %1$s.%2$s
+                            ORDER BY %9$s %8$s',
+                        // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
+                        $tableName,                                // 1
+                        $idColumn,                                 // 2
+                        $this->getMetaModel()->getTableName(),     // 3
+                        $this->getColName(),                       // 4
+                        $langColumn,                               // 5
+                        $langSet,                                  // 6
+                        ($addWhere ? ' AND ('.$addWhere.')' : ''), // 7
+                        $secondOrder,                              // 8
+                        $firstOrder                                // 9
+                        // @codingStandardsIgnoreEnd
+                    )
+                )
+                ->execute();
+        }
+
+        return $this
+            ->getDatabase()
+            ->prepare(
+                sprintf(
+                    'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
+                        FROM %1$s
+                        WHERE %3$s IN (%4$s)
+                        %5$s
+                        GROUP BY %1$s.%2$s
+                        ORDER BY %7$s %6$s',
+                    // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
+                    $tableName,                                // 1
+                    $idColumn,                                 // 2
+                    $langColumn,                               // 3
+                    $langSet,                                  // 4
+                    ($addWhere ? ' AND ('.$addWhere.')' : ''), // 5
+                    $secondOrder,                              // 6
+                    $firstOrder                                // 7
+                    // @codingStandardsIgnoreEnd
+                )
+            )
+            ->execute();
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * Fetch filter options from foreign table.
      */
@@ -258,54 +333,7 @@ class TranslatedSelect extends Select implements ITranslated
             ))
                 ->execute($this->get('id'));
         } else {
-            if ($usedOnly) {
-                $strQuery = sprintf(
-                    'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
-                    FROM %3$s
-                    LEFT JOIN %1$s ON (%1$s.id = (SELECT
-                        %1$s.id
-                        FROM %1$s
-                        WHERE %5$s IN (%6$s)
-                        AND (%1$s.%2$s=%3$s.%4$s)
-                        %7$s
-                        ORDER BY FIELD(%1$s.%5$s,%6$s)
-                        LIMIT 1
-                    ))
-                    GROUP BY %1$s.%2$s
-                    ORDER BY %9$s %8$s',
-                    // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
-                    $strTableName,                                           // 1
-                    $strColNameId,                                           // 2
-                    $this->getMetaModel()->getTableName(),                   // 3
-                    $this->getColName(),                                     // 4
-                    $strColNameLang,                                         // 5
-                    $strLangSet,                                             // 6
-                    ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 7
-                    $strSortColumn,                                          // 8
-                    $orderBy                                                 // 9
-                    // @codingStandardsIgnoreEnd
-                );
-            } else {
-                $strQuery = sprintf(
-                    'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
-                    FROM %1$s
-                    WHERE %3$s IN (%4$s)
-                    %5$s
-                    GROUP BY %1$s.%2$s
-                    ORDER BY %7$s %6$s',
-                    // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
-                    $strTableName,                                           // 1
-                    $strColNameId,                                           // 2
-                    $strColNameLang,                                         // 3
-                    $strLangSet,                                             // 4
-                    ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 5
-                    $strSortColumn,                                          // 6
-                    $orderBy                                                 // 7
-                    // @codingStandardsIgnoreEnd
-                );
-            }
-            $objValue = $objDB->prepare($strQuery)
-            ->execute();
+            $objValue = $this->getFilterOptionsForUsedOnly($usedOnly);
         }
 
         return $this->convertOptionsList($objValue, $this->getAliasColumn(), $this->getValueColumn(), $arrCount);
