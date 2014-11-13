@@ -284,53 +284,53 @@ class TranslatedSelect extends Select implements ITranslated
             return array();
         }
 
-        $strTableName    = $this->getSelectSource();
-        $strColNameId    = $this->getIdColumn();
-        $strColNameLang  = $this->getLanguageColumn();
-        $strColNameWhere = $this->getAdditionalWhere();
-        $strLangSet      = sprintf(
-            '\'%s\',\'%s\'',
-            $this->getMetaModel()->getActiveLanguage(),
-            $this->getMetaModel()->getFallbackLanguage()
-        );
-        $strSortColumn   = $this->getSortingColumn();
+        $strTableName = $this->getSelectSource();
+        $strColNameId = $this->getIdColumn();
 
         if (!($strTableName && $strColNameId)) {
             return array();
         }
 
-        $orderBy = $this->getFilterOptionsOrderBy();
-        $objDB   = \Database::getInstance();
-
         if ($arrIds) {
-            $objValue = $objDB->prepare(sprintf(
-                'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
-                FROM %3$s
-                LEFT JOIN %1$s ON (%1$s.id = (SELECT
-                    %1$s.id
-                    FROM %1$s
-                    WHERE %7$s IN (%8$s)
-                    AND (%1$s.%2$s=%3$s.%4$s)
-                    %6$s
-                    ORDER BY FIELD(%1$s.%7$s,%8$s)
-                    LIMIT 1
-                ))
-                WHERE %3$s.id IN (%5$s)
-                GROUP BY %1$s.%2$s
-                ORDER BY %10$s %9$s',
-                // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
-                $strTableName,                                           // 1
-                $strColNameId,                                           // 2
-                $this->getMetaModel()->getTableName(),                   // 3
-                $this->getColName(),                                     // 4
-                implode(',', $arrIds),                                   // 5
-                ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : ''), // 6
-                $strColNameLang,                                         // 7
-                $strLangSet,                                             // 8
-                $strSortColumn,                                          // 9
-                $orderBy                                                 // 10
-                // @codingStandardsIgnoreEnd
-            ))
+            $strColNameWhere = $this->getAdditionalWhere();
+            $strLangSet      = sprintf(
+                '\'%s\',\'%s\'',
+                $this->getMetaModel()->getActiveLanguage(),
+                $this->getMetaModel()->getFallbackLanguage()
+            );
+
+            $objValue = $this
+                ->getDatabase()
+                ->prepare(
+                    sprintf(
+                        'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
+                        FROM %3$s
+                        LEFT JOIN %1$s ON (%1$s.id = (SELECT
+                            %1$s.id
+                            FROM %1$s
+                            WHERE %7$s IN (%8$s)
+                            AND (%1$s.%2$s=%3$s.%4$s)
+                            %6$s
+                            ORDER BY FIELD(%1$s.%7$s,%8$s)
+                            LIMIT 1
+                        ))
+                        WHERE %3$s.id IN (%5$s)
+                        GROUP BY %1$s.%2$s
+                        ORDER BY %10$s %9$s',
+                        // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
+                        $strTableName,                                               // 1
+                        $strColNameId,                                               // 2
+                        $this->getMetaModel()->getTableName(),                       // 3
+                        $this->getColName(),                                         // 4
+                        implode(',', $arrIds),                                       // 5
+                        ($strColNameWhere ? ' AND (' . $strColNameWhere . ')' : ''), // 6
+                        $this->getLanguageColumn(),                                  // 7
+                        $strLangSet,                                                 // 8
+                        $this->getSortingColumn(),                                   // 9
+                        $this->getFilterOptionsOrderBy()                             // 10
+                        // @codingStandardsIgnoreEnd
+                    )
+                )
                 ->execute($this->get('id'));
         } else {
             $objValue = $this->getFilterOptionsForUsedOnly($usedOnly);
