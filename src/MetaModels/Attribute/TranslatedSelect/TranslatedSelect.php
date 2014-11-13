@@ -180,6 +180,25 @@ class TranslatedSelect extends Select implements ITranslated
     }
 
     /**
+     * Retrieve the sorting part for the getFilterOptions() queries.
+     *
+     * @return string
+     */
+    protected function getFilterOptionsOrderBy()
+    {
+        if ($this->getSortingOverrideTable() && $this->getSortingOverrideColumn()) {
+            return sprintf(
+                'FIELD(%s.id, (SELECT GROUP_CONCAT(id ORDER BY %s) FROM %s)),',
+                $this->getSelectSource(),
+                $this->getSortingOverrideColumn(),
+                $this->getSortingOverrideTable()
+            );
+        }
+
+        return '';
+    }
+
+    /**
      * {@inheritdoc}
      *
      * Fetch filter options from foreign table.
@@ -190,35 +209,24 @@ class TranslatedSelect extends Select implements ITranslated
             return array();
         }
 
-        $strTableName     = $this->getSelectSource();
-        $strColNameId     = $this->getIdColumn();
-        $strColNameLang   = $this->getLanguageColumn();
-        $strColNameWhere  = $this->getAdditionalWhere();
-        $strLangSet       = sprintf(
+        $strTableName    = $this->getSelectSource();
+        $strColNameId    = $this->getIdColumn();
+        $strColNameLang  = $this->getLanguageColumn();
+        $strColNameWhere = $this->getAdditionalWhere();
+        $strLangSet      = sprintf(
             '\'%s\',\'%s\'',
             $this->getMetaModel()->getActiveLanguage(),
             $this->getMetaModel()->getFallbackLanguage()
         );
-        $strSortColumn    = $this->getSortingColumn();
-        $strTableNameSrc  = $this->getSortingOverrideTable();
-        $strSortColumnSrc = $this->getSortingOverrideColumn();
+        $strSortColumn   = $this->getSortingColumn();
 
         if (!($strTableName && $strColNameId)) {
             return array();
         }
 
-        if ($strTableNameSrc) {
-            $orderBy = sprintf(
-                'FIELD(%s.id, (SELECT GROUP_CONCAT(id ORDER BY %s) FROM %s)),',
-                $strTableName,
-                $strSortColumnSrc,
-                $strTableNameSrc
-            );
-        } else {
-            $orderBy = '';
-        }
+        $orderBy = $this->getFilterOptionsOrderBy();
+        $objDB   = \Database::getInstance();
 
-        $objDB = \Database::getInstance();
         if ($arrIds) {
             $objValue = $objDB->prepare(sprintf(
                 'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
