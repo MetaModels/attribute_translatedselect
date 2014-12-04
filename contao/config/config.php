@@ -17,3 +17,5 @@
 
 $GLOBALS['TL_EVENTS'][\ContaoCommunityAlliance\Contao\EventDispatcher\Event\CreateEventDispatcherEvent::NAME][] =
     'MetaModels\DcGeneral\Events\Table\Attribute\Translated\Select\PropertyAttribute::registerEvents';
+
+$GLOBALS['TL_EVENT_SUBSCRIBERS'][] = 'MetaModels\Attribute\TranslatedSelect\AttributeTypeFactory';
