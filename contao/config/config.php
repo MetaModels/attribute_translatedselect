@@ -10,12 +10,22 @@
  * @package     MetaModels
  * @subpackage  AttributeTranslatedSelect
  * @author      Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author      Andreas Isaak <info@andreas-isaak.de>
+ * @author      Stefan Heimes <stefan_heimes@hotmail.com>
  * @copyright   The MetaModels team.
  * @license     LGPL.
  * @filesource
  */
 
-$GLOBALS['TL_EVENTS'][\ContaoCommunityAlliance\Contao\EventDispatcher\Event\CreateEventDispatcherEvent::NAME][] =
-    'MetaModels\DcGeneral\Events\Table\Attribute\Translated\Select\PropertyAttribute::registerEvents';
+$GLOBALS['TL_EVENTS'][\MetaModels\MetaModelsEvents::SUBSYSTEM_BOOT_BACKEND][] = function (
+    MetaModels\Events\MetaModelsBootEvent $event
+) {
+    new MetaModels\DcGeneral\Events\Table\Attribute\TranslatedSelect\Subscriber($event->getServiceContainer());
+};
 
-$GLOBALS['TL_EVENT_SUBSCRIBERS'][] = 'MetaModels\Attribute\TranslatedSelect\AttributeTypeFactory';
+$GLOBALS['TL_EVENTS'][\MetaModels\MetaModelsEvents::ATTRIBUTE_FACTORY_CREATE][] = function (
+    \MetaModels\Attribute\Events\CreateAttributeFactoryEvent $event
+) {
+    $factory = $event->getFactory();
+    $factory->addTypeFactory(new MetaModels\Attribute\TranslatedSelect\AttributeTypeFactory());
+};

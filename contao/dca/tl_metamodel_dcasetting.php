@@ -10,6 +10,8 @@
  * @package     MetaModels
  * @subpackage  AttributeTranslatedSelect
  * @author      Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author      Andreas Isaak <info@andreas-isaak.de>
+ * @author      Stefan Heimes <stefan_heimes@hotmail.com>
  * @copyright   The MetaModels team.
  * @license     LGPL.
  * @filesource

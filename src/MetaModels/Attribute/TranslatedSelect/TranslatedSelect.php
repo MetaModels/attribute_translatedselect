@@ -11,6 +11,10 @@
  * @subpackage  AttributeTranslatedSelect
  * @author      Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @author      Christian de la Haye <service@delahaye.de>
+ * @author      Andreas Isaak <info@andreas-isaak.de>
+ * @author      Markus Gerards <markus.gerards@googlemail.com>
+ * @author      Paul Pflugradt <paulpflugradt@googlemail.com>
+ * @author      Stefan Heimes <stefan_heimes@hotmail.com>
  * @copyright   The MetaModels team.
  * @license     LGPL.
  * @filesource
@@ -74,7 +78,7 @@ class TranslatedSelect extends Select implements ITranslated
             $strColNameId  = 'id';
             $strSortColumn = $this->getSortingOverrideColumn();
         }
-        $arrIds = \Database::getInstance()
+        $arrIds = $this->getDatabase()
             ->prepare(
                 sprintf(
                     'SELECT %1$s.id FROM %1$s
@@ -124,7 +128,7 @@ class TranslatedSelect extends Select implements ITranslated
         }
 
         // Translate to current language.
-        $objValue = \Database::getInstance()
+        $objValue = $this->getDatabase()
             ->prepare(
                 sprintf(
                     'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s=?%4$s',
@@ -147,7 +151,7 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function widgetToValue($varValue, $intId)
     {
-        $objDB           = \Database::getInstance();
+        $objDB           = $this->getDatabase();
         $strColNameAlias = $this->getAliasColumn();
         $strColNameId    = $this->getIdColumn();
         $strColNameWhere = $this->getAdditionalWhere();
@@ -394,7 +398,7 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function searchForInLanguages($strPattern, $arrLanguages = array())
     {
-        $objDB              = \Database::getInstance();
+        $objDB              = $this->getDatabase();
         $strTableNameId     = $this->getSelectSource();
         $strColNameId       = $this->getIdColumn();
         $strColNameLangCode = $this->getLanguageColumn();
@@ -449,7 +453,7 @@ class TranslatedSelect extends Select implements ITranslated
         $strColNameId          = $this->getIdColumn();
 
         if ($strTableName && $strColNameId) {
-            $objDB    = \Database::getInstance();
+            $objDB    = $this->getDatabase();
             $strQuery = sprintf(
                 'UPDATE %1$s SET %2$s=? WHERE %1$s.id=?',
                 $strMetaModelTableName,
@@ -467,7 +471,7 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function getTranslatedDataFor($arrIds, $strLangCode)
     {
-        $objDB              = \Database::getInstance();
+        $objDB              = $this->getDatabase();
         $strTableNameId     = $this->getSelectSource();
         $strColNameId       = $this->getIdColumn();
         $strColNameLangCode = $this->getLanguageColumn();
