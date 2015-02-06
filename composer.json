@@ -39,7 +39,7 @@
 	},
 	"require":{
 		"php": ">=5.3",
-		"contao/core": ">=2.11,<3.4",
+		"contao/core": ">=3.2,<3.5",
 		"contao-community-alliance/composer-plugin": "~2.0",
 		"metamodels/core": "~2.0",
 		"metamodels/attribute_select": "~2.0"
