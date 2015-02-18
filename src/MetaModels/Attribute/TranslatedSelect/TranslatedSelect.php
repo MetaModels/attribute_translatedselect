@@ -67,7 +67,7 @@ class TranslatedSelect extends Select implements ITranslated
     /**
      * {@inheritdoc}
      */
-    public function sortIds($arrIds, $strDirection)
+    public function sortIds($idList, $strDirection)
     {
         $strTableName = $this->getSortingOverrideTable();
         if (!$strTableName) {
@@ -78,7 +78,7 @@ class TranslatedSelect extends Select implements ITranslated
             $strColNameId  = 'id';
             $strSortColumn = $this->getSortingOverrideColumn();
         }
-        $arrIds = $this->getDatabase()
+        $idList = $this->getDatabase()
             ->prepare(
                 sprintf(
                     'SELECT %1$s.id FROM %1$s
@@ -90,7 +90,7 @@ class TranslatedSelect extends Select implements ITranslated
                     $this->getColName(),                   // 2
                     $strTableName,                         // 3
                     $strColNameId,                         // 4
-                    implode(',', $arrIds),                 // 5
+                    implode(',', $idList),                 // 5
                     $strSortColumn,                        // 6
                     $strDirection                          // 7
                     // @codingStandardsIgnoreEnd
@@ -98,7 +98,7 @@ class TranslatedSelect extends Select implements ITranslated
             )
             ->execute()
             ->fetchEach('id');
-        return $arrIds;
+        return $idList;
     }
 
     /**
@@ -149,7 +149,7 @@ class TranslatedSelect extends Select implements ITranslated
     /**
      * {@inheritdoc}
      */
-    public function widgetToValue($varValue, $intId)
+    public function widgetToValue($varValue, $itemId)
     {
         $objDB           = $this->getDatabase();
         $strColNameAlias = $this->getAliasColumn();
@@ -282,9 +282,9 @@ class TranslatedSelect extends Select implements ITranslated
      *
      * Fetch filter options from foreign table.
      */
-    public function getFilterOptions($arrIds, $usedOnly, &$arrCount = null)
+    public function getFilterOptions($idList, $usedOnly, &$arrCount = null)
     {
-        if (($arrIds !== null) && empty($arrIds)) {
+        if (($idList !== null) && empty($idList)) {
             return array();
         }
 
@@ -295,7 +295,7 @@ class TranslatedSelect extends Select implements ITranslated
             return array();
         }
 
-        if ($arrIds) {
+        if ($idList) {
             $strColNameWhere = $this->getAdditionalWhere();
             $strLangSet      = sprintf(
                 '\'%s\',\'%s\'',
@@ -326,7 +326,7 @@ class TranslatedSelect extends Select implements ITranslated
                         $strColNameId,                                               // 2
                         $this->getMetaModel()->getTableName(),                       // 3
                         $this->getColName(),                                         // 4
-                        implode(',', $arrIds),                                       // 5
+                        implode(',', $idList),                                       // 5
                         ($strColNameWhere ? ' AND (' . $strColNameWhere . ')' : ''), // 6
                         $this->getLanguageColumn(),                                  // 7
                         $strLangSet,                                                 // 8
