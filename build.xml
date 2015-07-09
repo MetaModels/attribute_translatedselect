@@ -6,6 +6,6 @@
    https://github.com/phpcq/phpcq
 
 -->
-<project name="MetaModels attribute translated alias" default="build">
+<project name="metamodels/attribute_translated alias" default="build">
     <import file="vendor/phpcq/phpcq/phpcq.main.xml"/>
 </project>
