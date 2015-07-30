@@ -69,36 +69,70 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function sortIds($idList, $strDirection)
     {
+        $metaModel    = $this->getMetaModel();
         $strTableName = $this->getSortingOverrideTable();
-        if (!$strTableName) {
-            $strTableName  = $this->getSelectSource();
-            $strColNameId  = $this->getIdColumn();
-            $strSortColumn = $this->getSortingColumn();
-        } else {
+        if ($strTableName) {
             $strColNameId  = 'id';
             $strSortColumn = $this->getSortingOverrideColumn();
-        }
-        $idList = $this->getDatabase()
-            ->prepare(
-                sprintf(
-                    'SELECT %1$s.id FROM %1$s
+
+            return $this->getDatabase()
+                ->prepare(
+                    sprintf(
+                        'SELECT %1$s.id FROM %1$s
                     LEFT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
                     WHERE %1$s.id IN (%5$s)
                     ORDER BY %3$s.%6$s %7$s',
-                    // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
-                    $this->getMetaModel()->getTableName(), // 1
-                    $this->getColName(),                   // 2
-                    $strTableName,                         // 3
-                    $strColNameId,                         // 4
-                    implode(',', $idList),                 // 5
-                    $strSortColumn,                        // 6
-                    $strDirection                          // 7
+                        // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
+                        $metaModel->getTableName(), // 1
+                        $this->getColName(),        // 2
+                        $strTableName,              // 3
+                        $strColNameId,              // 4
+                        implode(',', $idList),      // 5
+                        $strSortColumn,             // 6
+                        $strDirection               // 7
                     // @codingStandardsIgnoreEnd
+                    )
+                )
+                ->execute()
+                ->fetchEach('id');
+        }
+
+        $addWhere = $this->getAdditionalWhere();
+        $langSet  = sprintf('\'%s\',\'%s\'', $metaModel->getActiveLanguage(), $metaModel->getFallbackLanguage());
+        $sorted   = $this->getDatabase()
+            ->prepare(
+                sprintf(
+                    'SELECT %3$s.id
+                        FROM %3$s
+                        LEFT JOIN %1$s ON (%1$s.id = (SELECT
+                            %1$s.id
+                            FROM %1$s
+                            WHERE %5$s IN (%6$s)
+                            AND (%1$s.%2$s=%3$s.%4$s)
+                            %7$s
+                            ORDER BY FIELD(%1$s.%5$s,%6$s)
+                            LIMIT 1
+                        ))
+                        WHERE %3$s.id IN (%9$s)
+                        ORDER BY %1$s.%8$s %10$s',
+                    // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
+                    $this->getSelectSource(),                  // 1
+                    $this->getIdColumn(),                      // 2
+                    $this->getMetaModel()->getTableName(),     // 3
+                    $this->getColName(),                       // 4
+                    $this->getLanguageColumn(),                // 5
+                    $langSet,                                  // 6
+                    ($addWhere ? ' AND ('.$addWhere.')' : ''), // 7
+                    $this->getSortingColumn(),                 // 8
+                    $this->parameterMask($idList),             // 9
+                    $strDirection                              // 7
+                // @codingStandardsIgnoreEnd
                 )
             )
-            ->execute()
+            ->execute($idList)
             ->fetchEach('id');
-        return $idList;
+
+        return $sorted;
     }
 
     /**
