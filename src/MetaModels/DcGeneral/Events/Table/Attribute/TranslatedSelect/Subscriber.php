@@ -8,6 +8,7 @@
  * @package    MetaModels
  * @subpackage Core
  * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @copyright  2012 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0
  * @filesource
