@@ -12,6 +12,8 @@
  */
 
 
+$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn']['0']          = 'Sprachespalte';
+$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn']['1']          = 'Wählen Sie bitte, die Sprachspalte aus.';
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting']['0']          = 'Sortierspalte';
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting']['1']          = 'Wählen Sie bitte, welche Spalte der noch nicht übersetzten Tabelle für die Sortierung verwendet werden soll.';
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable']['0']            = 'Nicht übersetzte Tabelle für die Sortierung.';
