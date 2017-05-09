@@ -8,9 +8,10 @@
  *
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  *
- * last-updated: 2014-12-21T04:14:25+01:00
+ * last-updated: 2017-05-10T00:18:28+02:00
  */
 
+$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn']['0']          = 'Язык колонки';
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting']['0']          = 'Сортировка колонок';
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting']['1']          = 'Укажите, какая колонка непереведеннной таблицы будет использована для сортировки.';
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable']['0']            = 'Непереведенная таблица для сортировки';
