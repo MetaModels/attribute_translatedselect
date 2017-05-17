@@ -1,18 +1,22 @@
 <?php
 
 /**
- * The MetaModels extension allows the creation of multiple collections of custom items,
- * each with its own unique set of selectable attributes, with attribute extendability.
- * The Front-End modules allow you to build powerful listing and filtering of the
- * data in each collection.
+ * This file is part of MetaModels/attribute_translatedselect.
  *
- * PHP version 5
+ * (c) 2012-2017 The MetaModels team.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * This project is provided in good faith and hope to be usable by anyone.
+ *
  * @package     MetaModels
- * @subpackage  AttributeTranslatedSelect
+ * @subpackage  AttributeTranslateSelect
+ * @copyright   2012-2017 The MetaModels team.
  * @author      Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @author      Christian de la Haye <service@delahaye.de>
- * @copyright   The MetaModels team.
- * @license     LGPL.
+ * @author      Sven Baumann <baumann.sv@gmail.com>
+ * @license     https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0
  * @filesource
  */
 
@@ -20,5 +24,6 @@
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['typeOptions']['translatedselect']    = 'Translated select';
+$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn']                  = array('Language column', 'Please select the language column.');
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable']                    = array('Untranslated table for sorting', 'Please specify the table that provides the sorting column.');
 $GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting']                  = array('Sorting column', 'Please specify which column of the untranslated table shall be used for sorting.');
