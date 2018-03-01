@@ -11,19 +11,19 @@
  * This project is provided in good faith and hope to be usable by anyone.
  *
  * @package    MetaModels
- * @subpackage AttributeAttributeTranslatedSelect
+ * @subpackage AttributeTranslatedSelect
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2012-2017 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_text/blob/master/LICENSE LGPL-3.0
  * @filesource
  */
 
-namespace MetaModels\AttributeAttributeTranslatedSelectBundle\ContaoManager;
+namespace MetaModels\AttributeTranslatedSelectBundle\ContaoManager;
 
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
-use MetaModels\AttributeAttributeTranslatedSelectBundle\MetaModelsAttributeAttributeTranslatedSelectBundle;
+use MetaModels\AttributeTranslatedSelectBundle\MetaModelsAttributeTranslatedSelectBundle;
 use MetaModels\AttributeSelectBundle\MetaModelsAttributeSelectBundle;
 use MetaModels\CoreBundle\MetaModelsCoreBundle;
 
@@ -38,7 +38,7 @@ class Plugin implements BundlePluginInterface
     public function getBundles(ParserInterface $parser)
     {
         return [
-            BundleConfig::create(MetaModelsAttributeAttributeTranslatedSelectBundle::class)
+            BundleConfig::create(MetaModelsAttributeTranslatedSelectBundle::class)
                 ->setLoadAfter(
                     [
                         MetaModelsCoreBundle::class,

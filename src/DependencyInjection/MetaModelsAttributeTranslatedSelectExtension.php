@@ -11,14 +11,14 @@
  * This project is provided in good faith and hope to be usable by anyone.
  *
  * @package    MetaModels
- * @subpackage AttributeAttributeTranslatedSelect
+ * @subpackage AttributeTranslatedSelect
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2012-2017 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_text/blob/master/LICENSE LGPL-3.0
  * @filesource
  */
 
-namespace MetaModels\AttributeAttributeTranslatedSelectBundle\DependencyInjection;
+namespace MetaModels\AttributeTranslatedSelectBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -28,7 +28,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 /**
  * This is the Bundle extension.
  */
-class MetaModelsAttributeAttributeTranslatedSelectExtension extends Extension
+class MetaModelsAttributeTranslatedSelectExtension extends Extension
 {
     /**
      * {@inheritDoc}

@@ -11,7 +11,7 @@
  * This project is provided in good faith and hope to be usable by anyone.
  *
  * @package    MetaModels
- * @subpackage AttributeAttributeTranslatedSelect
+ * @subpackage AttributeTranslatedSelect
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2012-2017 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_text/blob/master/LICENSE LGPL-3.0
@@ -19,14 +19,14 @@
  */
 
 // This hack is to load the "old locations" of the classes.
-use MetaModels\AttributeAttributeTranslatedSelectBundle\Attribute\AttributeTypeFactory;
-use MetaModels\AttributeAttributeTranslatedSelectBundle\Attribute\AttributeTranslatedSelect;
+use MetaModels\AttributeTranslatedSelectBundle\Attribute\AttributeTypeFactory;
+use MetaModels\AttributeTranslatedSelectBundle\Attribute\AttributeTranslatedSelect;
 
 spl_autoload_register(
     function ($class) {
         static $classes = [
-            'MetaModels\Attribute\AttributeTranslatedSelect\AttributeTranslatedSelect'        => AttributeTranslatedSelect::class,
-            'MetaModels\Attribute\AttributeTranslatedSelect\AttributeTypeFactory' => AttributeTypeFactory::class,
+            'MetaModels\Attribute\TranslatedSelect\AttributeTranslatedSelect'        => AttributeTranslatedSelect::class,
+            'MetaModels\Attribute\TranslatedSelect\AttributeTypeFactory' => AttributeTypeFactory::class,
         ];
 
         if (isset($classes[$class])) {
