@@ -9,11 +9,10 @@
 		 processIsolation="false"
 		 stopOnFailure="false"
 		 syntaxCheck="false"
-		 bootstrap="tests/bootstrap.php"
 		>
 	<testsuites>
 		<testsuite name="MetaModels attribute translated select tests">
-			<directory>./tests/MetaModels/</directory>
+			<directory>./tests/</directory>
 		</testsuite>
 	</testsuites>
 
@@ -25,7 +24,7 @@
 
 	<filter>
 		<whitelist>
-			<directory>./src/system/modules/metamodelsattribute_translatedselect/MetaModels/</directory>
+			<directory>./src</directory>
 		</whitelist>
 	</filter>
 </phpunit>
