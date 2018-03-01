@@ -30,11 +30,8 @@
 
 namespace MetaModels\AttributeTranslatedSelectBundle\Attribute;
 
-use Doctrine\DBAL\Connection;
 use MetaModels\Attribute\ITranslated;
 use MetaModels\AttributeSelectBundle\Attribute\Select;
-use MetaModels\Helper\TableManipulator;
-use MetaModels\IMetaModel;
 
 /**
  * This is the MetaModelAttribute class for handling translated select attributes.

@@ -20,12 +20,12 @@
 
 // This hack is to load the "old locations" of the classes.
 use MetaModels\AttributeTranslatedSelectBundle\Attribute\AttributeTypeFactory;
-use MetaModels\AttributeTranslatedSelectBundle\Attribute\AttributeTranslatedSelect;
+use MetaModels\AttributeTranslatedSelectBundle\Attribute\TranslatedSelect;
 
 spl_autoload_register(
     function ($class) {
         static $classes = [
-            'MetaModels\Attribute\TranslatedSelect\AttributeTranslatedSelect'        => AttributeTranslatedSelect::class,
+            'MetaModels\Attribute\TranslatedSelect\TranslatedSelect'     => TranslatedSelect::class,
             'MetaModels\Attribute\TranslatedSelect\AttributeTypeFactory' => AttributeTypeFactory::class,
         ];
 

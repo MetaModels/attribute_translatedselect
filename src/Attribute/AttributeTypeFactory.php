@@ -26,22 +26,48 @@
 
 namespace MetaModels\AttributeTranslatedSelectBundle\Attribute;
 
+use Doctrine\DBAL\Connection;
 use MetaModels\Attribute\AbstractAttributeTypeFactory;
+use MetaModels\Helper\TableManipulator;
 
 /**
  * Attribute type factory for select attributes.
  */
 class AttributeTypeFactory extends AbstractAttributeTypeFactory
 {
-    /**
-     * {@inheritDoc}
+    /** Database connection.
+     *
+     * @var Connection
      */
-    public function __construct()
+    protected $connection;
+
+    /**
+     * Table manipulator.
+     *
+     * @var TableManipulator
+     */
+    protected $tableManipulator;
+
+    /**
+     * Construct.
+     *
+     * @param Connection       $connection       Database connection.
+     * @param TableManipulator $tableManipulator Table manipulator.
+     */
+    public function __construct(Connection $connection, TableManipulator $tableManipulator)
     {
         parent::__construct();
 
         $this->typeName  = 'translatedselect';
         $this->typeIcon  = 'bundles/metamodelsattributetranslatedselect/select.png';
         $this->typeClass = 'MetaModels\AttributeTranslatedSelectBundle\Attribute\TranslatedSelect';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createInstance($information, $metaModel)
+    {
+        return new TranslatedSelect($metaModel, $information, $this->connection, $this->tableManipulator);
     }
 }
