@@ -11,7 +11,7 @@
  * @subpackage Tests
  * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @copyright  The MetaModels team.
- * @license    LGPL.
+ * @license    LGPL-3.0-or-later
  * @filesource
  */
 
