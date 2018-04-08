@@ -84,7 +84,7 @@ class TranslatedSelect extends Select implements ITranslated
 
             return $this->getDatabase()
                 ->prepare(
-                    sprintf(
+                    \sprintf(
                         'SELECT %1$s.id FROM %1$s
                     LEFT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
                     WHERE %1$s.id IN (%5$s)
@@ -94,7 +94,7 @@ class TranslatedSelect extends Select implements ITranslated
                         $this->getColName(),        // 2
                         $strTableName,              // 3
                         $strColNameId,              // 4
-                        implode(',', $idList),      // 5
+                        \implode(',', $idList),      // 5
                         $strSortColumn,             // 6
                         $strDirection               // 7
                     // @codingStandardsIgnoreEnd
@@ -105,10 +105,10 @@ class TranslatedSelect extends Select implements ITranslated
         }
 
         $addWhere = $this->getAdditionalWhere();
-        $langSet  = sprintf('\'%s\',\'%s\'', $metaModel->getActiveLanguage(), $metaModel->getFallbackLanguage());
+        $langSet  = \sprintf('\'%s\',\'%s\'', $metaModel->getActiveLanguage(), $metaModel->getFallbackLanguage());
         $sorted   = $this->getDatabase()
             ->prepare(
-                sprintf(
+                \sprintf(
                     'SELECT %3$s.id
                         FROM %3$s
                         LEFT JOIN %1$s ON (%1$s.id = (SELECT
@@ -147,7 +147,7 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function getAttributeSettingNames()
     {
-        return array_merge(
+        return \array_merge(
             parent::getAttributeSettingNames(),
             [
                 'select_langcolumn',
@@ -176,7 +176,7 @@ class TranslatedSelect extends Select implements ITranslated
         // Translate to current language.
         $objValue = $this->getDatabase()
             ->prepare(
-                sprintf(
+                \sprintf(
                     'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s=?%4$s',
                     $this->getSelectSource(),
                     $this->getIdColumn(),
@@ -202,7 +202,7 @@ class TranslatedSelect extends Select implements ITranslated
         $strColNameId    = $this->getIdColumn();
         $strColNameWhere = $this->getAdditionalWhere();
         $strColNameLang  = $this->getLanguageColumn();
-        $strLangSet      = sprintf(
+        $strLangSet      = \sprintf(
             '\'%s\',\'%s\'',
             $this->getMetaModel()->getActiveLanguage(),
             $this->getMetaModel()->getFallbackLanguage()
@@ -215,7 +215,7 @@ class TranslatedSelect extends Select implements ITranslated
         // Lookup the id for this value.
         $objValue = $objDB
             ->prepare(
-                sprintf(
+                \sprintf(
                     'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s IN (%4$s)%5$s',
                     $this->getSelectSource(),
                     $strColNameAlias,
@@ -237,7 +237,7 @@ class TranslatedSelect extends Select implements ITranslated
     protected function getFilterOptionsOrderBy()
     {
         if ($this->getSortingOverrideTable() && $this->getSortingOverrideColumn()) {
-            return sprintf(
+            return \sprintf(
                 'FIELD(%s.id, (SELECT GROUP_CONCAT(id ORDER BY %s) FROM %s)),',
                 $this->getSelectSource(),
                 $this->getSortingOverrideColumn(),
@@ -259,7 +259,7 @@ class TranslatedSelect extends Select implements ITranslated
         $addWhere    = $this->getAdditionalWhere();
         $firstOrder  = $this->getFilterOptionsOrderBy();
         $secondOrder = $this->getSortingColumn();
-        $langSet     = sprintf(
+        $langSet     = \sprintf(
             '\'%s\',\'%s\'',
             $this->getMetaModel()->getActiveLanguage(),
             $this->getMetaModel()->getFallbackLanguage()
@@ -269,7 +269,7 @@ class TranslatedSelect extends Select implements ITranslated
             return $this
                 ->getDatabase()
                 ->prepare(
-                    sprintf(
+                    \sprintf(
                         'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
                             FROM %3$s
                             LEFT JOIN %1$s ON (%1$s.id = (SELECT
@@ -302,7 +302,7 @@ class TranslatedSelect extends Select implements ITranslated
         return $this
             ->getDatabase()
             ->prepare(
-                sprintf(
+                \sprintf(
                     'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
                         FROM %1$s
                         WHERE %3$s IN (%4$s)
@@ -343,7 +343,7 @@ class TranslatedSelect extends Select implements ITranslated
 
         if ($idList) {
             $strColNameWhere = $this->getAdditionalWhere();
-            $strLangSet      = sprintf(
+            $strLangSet      = \sprintf(
                 '\'%s\',\'%s\'',
                 $this->getMetaModel()->getActiveLanguage(),
                 $this->getMetaModel()->getFallbackLanguage()
@@ -352,7 +352,7 @@ class TranslatedSelect extends Select implements ITranslated
             $objValue = $this
                 ->getDatabase()
                 ->prepare(
-                    sprintf(
+                    \sprintf(
                         'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
                         FROM %3$s
                         LEFT JOIN %1$s ON (%1$s.id = (SELECT
@@ -372,7 +372,7 @@ class TranslatedSelect extends Select implements ITranslated
                         $strColNameId,                                               // 2
                         $this->getMetaModel()->getTableName(),                       // 3
                         $this->getColName(),                                         // 4
-                        implode(',', $idList),                                       // 5
+                        \implode(',', $idList),                                       // 5
                         ($strColNameWhere ? ' AND (' . $strColNameWhere . ')' : ''), // 6
                         $this->getLanguageColumn(),                                  // 7
                         $strLangSet,                                                 // 8
@@ -410,7 +410,7 @@ class TranslatedSelect extends Select implements ITranslated
         $arrReturn = $this->getTranslatedDataFor($arrIds, $strActiveLanguage);
 
         // Second round, fetch fallback languages if not all items could be resolved.
-        if ((count($arrReturn) < count($arrIds)) && ($strActiveLanguage != $strFallbackLanguage)) {
+        if ((\count($arrReturn) < \count($arrIds)) && ($strActiveLanguage != $strFallbackLanguage)) {
             $arrFallbackIds = [];
             foreach ($arrIds as $intId) {
                 if (empty($arrReturn[$intId])) {
@@ -457,11 +457,11 @@ class TranslatedSelect extends Select implements ITranslated
             $strMetaModelTableName   = $this->getMetaModel()->getTableName();
             $strMetaModelTableNameId = $strMetaModelTableName.'_id';
 
-            $strPattern = str_replace(['*', '?'], ['%', '_'], $strPattern);
+            $strPattern = \str_replace(['*', '?'], ['%', '_'], $strPattern);
 
             // Using aliased join here to resolve issue #3 for normal select attributes
             // (SQL error for self referencing table).
-            $objValue = $objDB->prepare(sprintf(
+            $objValue = $objDB->prepare(\sprintf(
                 'SELECT sourceTable.*, %2$s.id AS %3$s
                 FROM %1$s sourceTable
                 RIGHT JOIN %2$s ON (sourceTable.%4$s=%2$s.%5$s)
@@ -474,7 +474,7 @@ class TranslatedSelect extends Select implements ITranslated
                 $strColNameId,                                        // 4
                 $this->getColName(),                                  // 5
                 $strColNameLangCode,                                  // 6
-                '\'' . implode('\',\'', $arrLanguages) . '\'',        // 7
+                '\'' . \implode('\',\'', $arrLanguages) . '\'',        // 7
                 $strColValue,                                         // 8
                 $strColAlias,                                         // 9
                 ($strColNameWhere ? ('AND ' . $strColNameWhere) : '') // 10
@@ -500,7 +500,7 @@ class TranslatedSelect extends Select implements ITranslated
 
         if ($strTableName && $strColNameId) {
             $objDB    = $this->getDatabase();
-            $strQuery = sprintf(
+            $strQuery = \sprintf(
                 'UPDATE %1$s SET %2$s=? WHERE %1$s.id=?',
                 $strMetaModelTableName,
                 $this->getColName()
@@ -530,7 +530,7 @@ class TranslatedSelect extends Select implements ITranslated
 
             // Using aliased join here to resolve issue #3 for normal select attributes
             // (SQL error for self referencing table).
-            $objValue = $objDB->prepare(sprintf(
+            $objValue = $objDB->prepare(\sprintf(
                 'SELECT sourceTable.*, %2$s.id AS %3$s
                 FROM %1$s sourceTable
                 LEFT JOIN %2$s
@@ -542,7 +542,7 @@ class TranslatedSelect extends Select implements ITranslated
                 $strMetaModelTableNameId,                               // 3
                 $strColNameId,                                          // 4
                 $this->getColName(),                                    // 5
-                implode(',', $arrIds),                                  // 6
+                \implode(',', $arrIds),                                  // 6
                 $strColNameLangCode,                                    // 7
                 ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') // 8
             // @codingStandardsIgnoreEnd

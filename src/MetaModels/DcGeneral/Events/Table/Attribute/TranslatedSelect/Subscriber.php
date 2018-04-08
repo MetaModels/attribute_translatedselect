@@ -89,7 +89,7 @@ class Subscriber extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\Sub
         $result = $this->getColumnNamesFrom($event->getModel()->getProperty('select_table'));
 
         if (!empty($result)) {
-            asort($result);
+            \asort($result);
             $event->setOptions($result);
         }
     }
