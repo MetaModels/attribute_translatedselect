@@ -21,6 +21,7 @@ namespace MetaModels\Test\Attribute\TranslatedSelect;
 use MetaModels\Attribute\TranslatedSelect\TranslatedSelect;
 use MetaModels\IMetaModel;
 use PHPUnit\Framework\TestCase;
+use MetaModels\MetaModel;
 
 /**
  * Unit tests to test class Select.
@@ -37,7 +38,7 @@ class TranslatedSelectTest extends TestCase
      */
     protected function mockMetaModel($language, $fallbackLanguage)
     {
-        $metaModel = $this->getMockBuilder('MetaModels\MetaModel')->setMethods([])->setConstructorArgs([[]])->getMock();
+        $metaModel = $this->getMockBuilder(MetaModel::class)->setMethods([])->setConstructorArgs([[]])->getMock();
 
         $metaModel
             ->expects($this->any())
@@ -65,6 +66,6 @@ class TranslatedSelectTest extends TestCase
     public function testInstantiationTranslatedSelect()
     {
         $text = new TranslatedSelect($this->mockMetaModel('en', 'en'));
-        $this->assertInstanceOf('MetaModels\Attribute\TranslatedSelect\TranslatedSelect', $text);
+        $this->assertInstanceOf(TranslatedSelect::class, $text);
     }
 }

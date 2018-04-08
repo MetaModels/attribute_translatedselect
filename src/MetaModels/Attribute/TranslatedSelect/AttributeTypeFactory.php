@@ -40,6 +40,6 @@ class AttributeTypeFactory extends AbstractAttributeTypeFactory
         parent::__construct();
         $this->typeName  = 'translatedselect';
         $this->typeIcon  = 'system/modules/metamodelsattribute_translatedselect/html/select.png';
-        $this->typeClass = 'MetaModels\Attribute\TranslatedSelect\TranslatedSelect';
+        $this->typeClass = TranslatedSelect::class;
     }
 }
