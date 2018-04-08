@@ -20,11 +20,12 @@ namespace MetaModels\Test\Attribute\TranslatedSelect;
 
 use MetaModels\Attribute\TranslatedSelect\TranslatedSelect;
 use MetaModels\IMetaModel;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests to test class Select.
  */
-class TranslatedSelectTest extends \PHPUnit_Framework_TestCase
+class TranslatedSelectTest extends TestCase
 {
     /**
      * Mock a MetaModel.
@@ -36,11 +37,7 @@ class TranslatedSelectTest extends \PHPUnit_Framework_TestCase
      */
     protected function mockMetaModel($language, $fallbackLanguage)
     {
-        $metaModel = $this->getMock(
-            'MetaModels\MetaModel',
-            array(),
-            array(array())
-        );
+        $metaModel = $this->getMockBuilder('MetaModels\MetaModel')->setMethods(array())->setConstructorArgs(array(array()))->getMock();
 
         $metaModel
             ->expects($this->any())
