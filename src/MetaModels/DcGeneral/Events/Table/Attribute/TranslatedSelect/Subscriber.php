@@ -3,7 +3,7 @@
 /**
  * This file is part of MetaModels/attribute_translatedselect.
  *
- * (c) 2012-2016 The MetaModels team.
+ * (c) 2012-2018 The MetaModels team.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,8 +18,8 @@
  * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @author     Sven Baumann <baumann.sv@gmail.com>
- * @copyright  2012-2016 The MetaModels team.
- * @license    https://github.com/MetaModels/attribute_translatedcheckbox/blob/master/LICENSE LGPL-3.0
+ * @copyright  2012-2018 The MetaModels team.
+ * @license    https://github.com/MetaModels/attribute_translatedcheckbox/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
 
@@ -42,15 +42,15 @@ class Subscriber extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\Sub
         $this
             ->addListener(
                 GetPropertyOptionsEvent::NAME,
-                array($this, 'getTableNames')
+                [$this, 'getTableNames']
             )
             ->addListener(
                 GetPropertyOptionsEvent::NAME,
-                array($this, 'getColumnNames')
+                [$this, 'getColumnNames']
             )
             ->addListener(
                 GetPropertyOptionsEvent::NAME,
-                array($this, 'getSourceColumnNames')
+                [$this, 'getSourceColumnNames']
             );
     }
 
@@ -89,7 +89,7 @@ class Subscriber extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\Sub
         $result = $this->getColumnNamesFrom($event->getModel()->getProperty('select_table'));
 
         if (!empty($result)) {
-            asort($result);
+            \asort($result);
             $event->setOptions($result);
         }
     }
@@ -117,7 +117,7 @@ class Subscriber extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\Sub
             return;
         }
 
-        $result = array();
+        $result = [];
 
         foreach ($database->listFields($table) as $arrInfo) {
             if ($arrInfo['type'] != 'index') {

@@ -10,8 +10,9 @@
  * @package    MetaModels
  * @subpackage Tests
  * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author     Sven Baumann <baumann.sv@gmail.com>
  * @copyright  The MetaModels team.
- * @license    LGPL.
+ * @license    LGPL-3.0-or-later
  * @filesource
  */
 
@@ -19,11 +20,13 @@ namespace MetaModels\Test\Attribute\TranslatedSelect;
 
 use MetaModels\Attribute\TranslatedSelect\TranslatedSelect;
 use MetaModels\IMetaModel;
+use PHPUnit\Framework\TestCase;
+use MetaModels\MetaModel;
 
 /**
  * Unit tests to test class Select.
  */
-class TranslatedSelectTest extends \PHPUnit_Framework_TestCase
+class TranslatedSelectTest extends TestCase
 {
     /**
      * Mock a MetaModel.
@@ -35,11 +38,7 @@ class TranslatedSelectTest extends \PHPUnit_Framework_TestCase
      */
     protected function mockMetaModel($language, $fallbackLanguage)
     {
-        $metaModel = $this->getMock(
-            'MetaModels\MetaModel',
-            array(),
-            array(array())
-        );
+        $metaModel = $this->getMockBuilder(MetaModel::class)->setMethods([])->setConstructorArgs([[]])->getMock();
 
         $metaModel
             ->expects($this->any())
@@ -67,6 +66,6 @@ class TranslatedSelectTest extends \PHPUnit_Framework_TestCase
     public function testInstantiationTranslatedSelect()
     {
         $text = new TranslatedSelect($this->mockMetaModel('en', 'en'));
-        $this->assertInstanceOf('MetaModels\Attribute\TranslatedSelect\TranslatedSelect', $text);
+        $this->assertInstanceOf(TranslatedSelect::class, $text);
     }
 }

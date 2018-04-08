@@ -9,8 +9,9 @@
  * @package    MetaModels
  * @subpackage Tests
  * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author     Sven Baumann <baumann.sv@gmail.com>
  * @copyright  The MetaModels team.
- * @license    LGPL.
+ * @license    LGPL-3.0-or-later
  * @filesource
  */
 
@@ -20,6 +21,8 @@ use MetaModels\Attribute\IAttributeTypeFactory;
 use MetaModels\Attribute\TranslatedSelect\AttributeTypeFactory;
 use MetaModels\IMetaModel;
 use MetaModels\Test\Attribute\AttributeTypeFactoryTest;
+use MetaModels\MetaModel;
+use MetaModels\Attribute\TranslatedSelect\TranslatedSelect;
 
 /**
  * Test the attribute factory.
@@ -41,11 +44,7 @@ class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
      */
     protected function mockMetaModel($tableName, $language, $fallbackLanguage)
     {
-        $metaModel = $this->getMock(
-            'MetaModels\MetaModel',
-            array(),
-            array(array())
-        );
+        $metaModel = $this->getMockBuilder(MetaModel::class)->setMethods([])->setConstructorArgs([[]])->getMock();
 
         $metaModel
             ->expects($this->any())
@@ -72,7 +71,7 @@ class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
      */
     protected function getAttributeFactories()
     {
-        return array(new AttributeTypeFactory());
+        return [new AttributeTypeFactory()];
     }
 
     /**
@@ -83,17 +82,17 @@ class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
     public function testCreateSelect()
     {
         $factory   = new AttributeTypeFactory();
-        $values    = array(
+        $values    = [
             'select_table'  => 'tl_page',
             'select_column' => 'pid',
             'select_alias'  => 'alias',
-        );
+        ];
         $attribute = $factory->createInstance(
             $values,
             $this->mockMetaModel('mm_test', 'de', 'en')
         );
 
-        $this->assertInstanceOf('MetaModels\Attribute\TranslatedSelect\TranslatedSelect', $attribute);
+        $this->assertInstanceOf(TranslatedSelect::class, $attribute);
 
         foreach ($values as $key => $value) {
             $this->assertEquals($value, $attribute->get($key), $key);
