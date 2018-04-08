@@ -23,7 +23,10 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_metamodel_attribute']['typeOptions']['translatedselect']    = 'Translated select';
-$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn']                  = array('Language column', 'Please select the language column.');
-$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable']                    = array('Untranslated table for sorting', 'Please specify the table that provides the sorting column.');
-$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting']                  = array('Sorting column', 'Please specify which column of the untranslated table shall be used for sorting.');
+$GLOBALS['TL_LANG']['tl_metamodel_attribute']['typeOptions']['translatedselect'] = 'Translated select';
+$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn']               =
+    ['Language column', 'Please select the language column.'];
+$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable']                 =
+    ['Untranslated table for sorting', 'Please specify the table that provides the sorting column.'];
+$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting']               =
+    ['Sorting column', 'Please specify which column of the untranslated table shall be used for sorting.'];

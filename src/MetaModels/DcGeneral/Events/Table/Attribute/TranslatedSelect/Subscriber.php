@@ -42,15 +42,15 @@ class Subscriber extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\Sub
         $this
             ->addListener(
                 GetPropertyOptionsEvent::NAME,
-                array($this, 'getTableNames')
+                [$this, 'getTableNames']
             )
             ->addListener(
                 GetPropertyOptionsEvent::NAME,
-                array($this, 'getColumnNames')
+                [$this, 'getColumnNames']
             )
             ->addListener(
                 GetPropertyOptionsEvent::NAME,
-                array($this, 'getSourceColumnNames')
+                [$this, 'getSourceColumnNames']
             );
     }
 
@@ -117,7 +117,7 @@ class Subscriber extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\Sub
             return;
         }
 
-        $result = array();
+        $result = [];
 
         foreach ($database->listFields($table) as $arrInfo) {
             if ($arrInfo['type'] != 'index') {

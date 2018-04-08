@@ -37,7 +37,7 @@ class TranslatedSelectTest extends TestCase
      */
     protected function mockMetaModel($language, $fallbackLanguage)
     {
-        $metaModel = $this->getMockBuilder('MetaModels\MetaModel')->setMethods(array())->setConstructorArgs(array(array()))->getMock();
+        $metaModel = $this->getMockBuilder('MetaModels\MetaModel')->setMethods([])->setConstructorArgs([[]])->getMock();
 
         $metaModel
             ->expects($this->any())

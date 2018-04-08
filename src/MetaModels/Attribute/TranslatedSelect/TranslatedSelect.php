@@ -29,8 +29,8 @@
 
 namespace MetaModels\Attribute\TranslatedSelect;
 
-use MetaModels\Attribute\Select\Select;
 use MetaModels\Attribute\ITranslated;
+use MetaModels\Attribute\Select\Select;
 
 /**
  * This is the MetaModelAttribute class for handling translated select attributes.
@@ -147,9 +147,14 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function getAttributeSettingNames()
     {
-        return array_merge(parent::getAttributeSettingNames(), array(
-            'select_langcolumn', 'select_srctable', 'select_srcsorting'
-        ));
+        return array_merge(
+            parent::getAttributeSettingNames(),
+            [
+                'select_langcolumn',
+                'select_srctable',
+                'select_srcsorting'
+            ]
+        );
     }
 
     /**
@@ -326,14 +331,14 @@ class TranslatedSelect extends Select implements ITranslated
     public function getFilterOptions($idList, $usedOnly, &$arrCount = null)
     {
         if (($idList !== null) && empty($idList)) {
-            return array();
+            return [];
         }
 
         $strTableName = $this->getSelectSource();
         $strColNameId = $this->getIdColumn();
 
         if (!($strTableName && $strColNameId)) {
-            return array();
+            return [];
         }
 
         if ($idList) {
@@ -391,7 +396,7 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function searchFor($strPattern)
     {
-        return $this->searchForInLanguages($strPattern, array($this->getMetaModel()->getActiveLanguage()));
+        return $this->searchForInLanguages($strPattern, [$this->getMetaModel()->getActiveLanguage()]);
     }
 
     /**
@@ -406,7 +411,7 @@ class TranslatedSelect extends Select implements ITranslated
 
         // Second round, fetch fallback languages if not all items could be resolved.
         if ((count($arrReturn) < count($arrIds)) && ($strActiveLanguage != $strFallbackLanguage)) {
-            $arrFallbackIds = array();
+            $arrFallbackIds = [];
             foreach ($arrIds as $intId) {
                 if (empty($arrReturn[$intId])) {
                     $arrFallbackIds[] = $intId;
@@ -437,7 +442,7 @@ class TranslatedSelect extends Select implements ITranslated
      *
      * Search the attribute in the given languages.
      */
-    public function searchForInLanguages($strPattern, $arrLanguages = array())
+    public function searchForInLanguages($strPattern, $arrLanguages = [])
     {
         $objDB              = $this->getDatabase();
         $strTableNameId     = $this->getSelectSource();
@@ -446,13 +451,13 @@ class TranslatedSelect extends Select implements ITranslated
         $strColValue        = $this->getValueColumn();
         $strColAlias        = $this->getAliasColumn();
         $strColNameWhere    = $this->getAdditionalWhere();
-        $arrReturn          = array();
+        $arrReturn          = [];
 
         if ($strTableNameId && $strColNameId) {
             $strMetaModelTableName   = $this->getMetaModel()->getTableName();
             $strMetaModelTableNameId = $strMetaModelTableName.'_id';
 
-            $strPattern = str_replace(array('*', '?'), array('%', '_'), $strPattern);
+            $strPattern = str_replace(['*', '?'], ['%', '_'], $strPattern);
 
             // Using aliased join here to resolve issue #3 for normal select attributes
             // (SQL error for self referencing table).
@@ -517,7 +522,7 @@ class TranslatedSelect extends Select implements ITranslated
         $strColNameId       = $this->getIdColumn();
         $strColNameLangCode = $this->getLanguageColumn();
         $strColNameWhere    = $this->getAdditionalWhere();
-        $arrReturn          = array();
+        $arrReturn          = [];
 
         if ($strTableNameId && $strColNameId) {
             $strMetaModelTableName   = $this->getMetaModel()->getTableName();

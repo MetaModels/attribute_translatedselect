@@ -42,7 +42,7 @@ class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
      */
     protected function mockMetaModel($tableName, $language, $fallbackLanguage)
     {
-        $metaModel = $this->getMockBuilder('MetaModels\MetaModel')->setMethods(array())->setConstructorArgs(array(array()))->getMock();
+        $metaModel = $this->getMockBuilder('MetaModels\MetaModel')->setMethods([])->setConstructorArgs([[]])->getMock();
 
         $metaModel
             ->expects($this->any())
@@ -69,7 +69,7 @@ class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
      */
     protected function getAttributeFactories()
     {
-        return array(new AttributeTypeFactory());
+        return [new AttributeTypeFactory()];
     }
 
     /**
@@ -80,11 +80,11 @@ class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
     public function testCreateSelect()
     {
         $factory   = new AttributeTypeFactory();
-        $values    = array(
+        $values    = [
             'select_table'  => 'tl_page',
             'select_column' => 'pid',
             'select_alias'  => 'alias',
-        );
+        ];
         $attribute = $factory->createInstance(
             $values,
             $this->mockMetaModel('mm_test', 'de', 'en')
