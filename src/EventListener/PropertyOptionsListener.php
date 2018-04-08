@@ -20,7 +20,7 @@
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2012-2018 The MetaModels team.
- * @license    https://github.com/MetaModels/attribute_translatedcheckbox/blob/master/LICENSE LGPL-3.0
+ * @license    https://github.com/MetaModels/attribute_translatedcheckbox/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
 
@@ -69,7 +69,7 @@ class PropertyOptionsListener extends BackendEventsListener
         $result = $this->getColumnNamesFrom($event->getModel()->getProperty('select_table'));
 
         if (!empty($result)) {
-            asort($result);
+            \asort($result);
             $event->setOptions($result);
         }
     }
@@ -97,7 +97,7 @@ class PropertyOptionsListener extends BackendEventsListener
             return;
         }
 
-        $result = array();
+        $result = [];
 
         foreach ($schemaManager->listTableColumns($table) as $column) {
             $result[$column->getName()] = $column->getName();

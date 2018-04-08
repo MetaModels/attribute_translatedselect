@@ -20,7 +20,7 @@
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2012-2018 The MetaModels team.
- * @license    https://github.com/MetaModels/attribute_translatedcheckbox/blob/master/LICENSE LGPL-3.0
+ * @license    https://github.com/MetaModels/attribute_translatedcheckbox/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
 
@@ -60,7 +60,7 @@ class AttributeTypeFactory extends AbstractAttributeTypeFactory
 
         $this->typeName  = 'translatedselect';
         $this->typeIcon  = 'bundles/metamodelsattributetranslatedselect/select.png';
-        $this->typeClass = 'MetaModels\AttributeTranslatedSelectBundle\Attribute\TranslatedSelect';
+        $this->typeClass = TranslatedSelect::class;
     }
 
     /**
