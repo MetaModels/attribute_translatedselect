@@ -19,6 +19,7 @@
  * @author     Andreas Isaak <info@andreas-isaak.de>
  * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @author     Sven Baumann <baumann.sv@gmail.com>
+ * @author     David Maack <maack@men-at-work.de>
  * @copyright  2012-2018 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedcheckbox/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
