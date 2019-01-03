@@ -28,8 +28,6 @@ use MetaModels\Attribute\TranslatedSelect\TranslatedSelect;
 
 /**
  * Test the attribute factory.
- *
- * @package MetaModels\Test\Filter\Setting
  */
 class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
 {

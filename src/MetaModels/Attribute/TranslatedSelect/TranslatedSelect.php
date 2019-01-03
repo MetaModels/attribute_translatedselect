@@ -30,10 +30,6 @@ use MetaModels\Attribute\Select\Select;
 
 /**
  * This is the MetaModelAttribute class for handling translated select attributes.
- *
- * @package    MetaModels
- * @subpackage AttributeTranslatedSelect
- * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
  */
 class TranslatedSelect extends Select implements ITranslated
 {
