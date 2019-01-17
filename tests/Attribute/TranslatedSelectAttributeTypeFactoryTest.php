@@ -17,7 +17,7 @@
  * @filesource
  */
 
-namespace MetaModels\Test\Attribute\TranslatedSelect;
+namespace MetaModels\AttributeTranslatedSelectBundle\Test\Attribute;
 
 use MetaModels\Attribute\IAttributeTypeFactory;
 use MetaModels\AttributeTranslatedSelectBundle\Attribute\AttributeTypeFactory;

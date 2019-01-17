@@ -17,7 +17,7 @@
  * @filesource
  */
 
-namespace MetaModels\Test\Attribute\TranslatedSelect;
+namespace MetaModels\AttributeTranslatedSelectBundle\Test\Attribute;
 
 use MetaModels\AttributeTranslatedSelectBundle\Attribute\TranslatedSelect;
 use MetaModels\IMetaModel;
