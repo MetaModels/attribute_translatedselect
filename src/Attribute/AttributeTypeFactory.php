@@ -23,15 +23,16 @@
 namespace MetaModels\AttributeTranslatedSelectBundle\Attribute;
 
 use Doctrine\DBAL\Connection;
-use MetaModels\Attribute\AbstractAttributeTypeFactory;
+use MetaModels\Attribute\IAttributeTypeFactory;
 use MetaModels\Helper\TableManipulator;
 
 /**
  * Attribute type factory for select attributes.
  */
-class AttributeTypeFactory extends AbstractAttributeTypeFactory
+class AttributeTypeFactory implements IAttributeTypeFactory
 {
-    /** Database connection.
+    /**
+     * Database connection.
      *
      * @var Connection
      */
@@ -52,11 +53,24 @@ class AttributeTypeFactory extends AbstractAttributeTypeFactory
      */
     public function __construct(Connection $connection, TableManipulator $tableManipulator)
     {
-        parent::__construct();
+        $this->connection       = $connection;
+        $this->tableManipulator = $tableManipulator;
+    }
 
-        $this->typeName  = 'translatedselect';
-        $this->typeIcon  = 'bundles/metamodelsattributetranslatedselect/select.png';
-        $this->typeClass = TranslatedSelect::class;
+    /**
+     * {@inheritdoc}
+     */
+    public function getTypeName()
+    {
+        return 'translatedselect';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTypeIcon()
+    {
+        return 'bundles/metamodelsattributetranslatedselect/select.png';
     }
 
     /**
@@ -65,5 +79,29 @@ class AttributeTypeFactory extends AbstractAttributeTypeFactory
     public function createInstance($information, $metaModel)
     {
         return new TranslatedSelect($metaModel, $information, $this->connection, $this->tableManipulator);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isTranslatedType()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSimpleType()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isComplexType()
+    {
+        return true;
     }
 }
