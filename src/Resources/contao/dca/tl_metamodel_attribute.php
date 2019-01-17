@@ -71,4 +71,3 @@ $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srcsorting'] = [
     ],
     'sql'                    => 'varchar(255) NOT NULL default \'\''
 ];
-

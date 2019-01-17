@@ -92,7 +92,7 @@ class TranslatedSelect extends Select implements ITranslated
             ->from($this->getSelectSource(), 'z')
             ->where($this->getLanguageColumn() . 'IN(:langset)')
             ->andWhere('z.' . $this->getIdColumn() . '=m.' . $this->getColName())
-            ->orderBy(sprintf('FIELD(z.%s,%s)',$this->getLanguageColumn(), $langSet))
+            ->orderBy(sprintf('FIELD(z.%s,%s)', $this->getLanguageColumn(), $langSet))
             ->setMaxResults(1);
 
         if ($addWhere) {
@@ -171,11 +171,6 @@ class TranslatedSelect extends Select implements ITranslated
         $strColNameId    = $this->getIdColumn();
         $strColNameWhere = $this->getAdditionalWhere();
         $strColNameLang  = $this->getLanguageColumn();
-        $strLangSet      = \sprintf(
-            '\'%s\',\'%s\'',
-            $this->getMetaModel()->getActiveLanguage(),
-            $this->getMetaModel()->getFallbackLanguage()
-        );
 
         if (!$strColNameAlias) {
             $strColNameAlias = $strColNameId;
