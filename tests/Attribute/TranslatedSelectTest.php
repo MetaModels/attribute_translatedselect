@@ -19,10 +19,11 @@
 
 namespace MetaModels\AttributeTranslatedSelectBundle\Test\Attribute;
 
+use Doctrine\DBAL\Connection;
 use MetaModels\AttributeTranslatedSelectBundle\Attribute\TranslatedSelect;
+use MetaModels\Helper\TableManipulator;
 use MetaModels\IMetaModel;
 use PHPUnit\Framework\TestCase;
-use MetaModels\MetaModel;
 
 /**
  * Unit tests to test class Select.
@@ -39,24 +40,47 @@ class TranslatedSelectTest extends TestCase
      */
     protected function mockMetaModel($language, $fallbackLanguage)
     {
-        $metaModel = $this->getMockBuilder(MetaModel::class)->setMethods([])->setConstructorArgs([[]])->getMock();
+        $metaModel = $this->getMockForAbstractClass(IMetaModel::class);
 
         $metaModel
-            ->expects($this->any())
             ->method('getTableName')
-            ->will($this->returnValue('mm_unittest'));
+            ->willReturn('mm_unittest');
 
         $metaModel
-            ->expects($this->any())
             ->method('getActiveLanguage')
-            ->will($this->returnValue($language));
+            ->willReturn($language);
 
         $metaModel
-            ->expects($this->any())
             ->method('getFallbackLanguage')
-            ->will($this->returnValue($fallbackLanguage));
+            ->willReturn($fallbackLanguage);
 
         return $metaModel;
+    }
+
+    /**
+     * Mock the database connection.
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|Connection
+     */
+    private function mockConnection()
+    {
+        return $this->getMockBuilder(Connection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * Mock the table manipulator.
+     *
+     * @param Connection $connection The database connection mock.
+     *
+     * @return TableManipulator|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function mockTableManipulator(Connection $connection)
+    {
+        return $this->getMockBuilder(TableManipulator::class)
+            ->setConstructorArgs([$connection, []])
+            ->getMock();
     }
 
     /**
@@ -66,7 +90,13 @@ class TranslatedSelectTest extends TestCase
      */
     public function testInstantiationTranslatedSelect()
     {
-        $text = new TranslatedSelect($this->mockMetaModel('en', 'en'));
-        $this->assertInstanceOf(TranslatedSelect::class, $text);
+        $connection = $this->mockConnection();
+        $select     = new TranslatedSelect(
+            $this->mockMetaModel('en', 'en'),
+            [],
+            $connection,
+            $this->mockTableManipulator($connection)
+        );
+        $this->assertInstanceOf(TranslatedSelect::class, $select);
     }
 }

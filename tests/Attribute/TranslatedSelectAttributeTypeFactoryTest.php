@@ -19,59 +19,70 @@
 
 namespace MetaModels\AttributeTranslatedSelectBundle\Test\Attribute;
 
-use MetaModels\Attribute\IAttributeTypeFactory;
+use Doctrine\DBAL\Connection;
 use MetaModels\AttributeTranslatedSelectBundle\Attribute\AttributeTypeFactory;
 use MetaModels\AttributeTranslatedSelectBundle\Attribute\TranslatedSelect;
+use MetaModels\Helper\TableManipulator;
 use MetaModels\IMetaModel;
-use MetaModels\Test\Attribute\AttributeTypeFactoryTest;
-use MetaModels\MetaModel;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test the attribute factory.
  */
-class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
+class TranslatedSelectAttributeTypeFactoryTest extends TestCase
 {
     /**
      * Mock a MetaModel.
      *
      * @param string $tableName        The table name.
-     *
      * @param string $language         The language.
-     *
      * @param string $fallbackLanguage The fallback language.
      *
      * @return IMetaModel
      */
     protected function mockMetaModel($tableName, $language, $fallbackLanguage)
     {
-        $metaModel = $this->getMockBuilder(MetaModel::class)->setMethods([])->setConstructorArgs([[]])->getMock();
+        $metaModel = $this->getMockForAbstractClass(IMetaModel::class);
 
         $metaModel
-            ->expects($this->any())
             ->method('getTableName')
-            ->will($this->returnValue($tableName));
+            ->willReturn($tableName);
 
         $metaModel
-            ->expects($this->any())
             ->method('getActiveLanguage')
-            ->will($this->returnValue($language));
+            ->willReturn($language);
 
         $metaModel
-            ->expects($this->any())
             ->method('getFallbackLanguage')
-            ->will($this->returnValue($fallbackLanguage));
+            ->willReturn($fallbackLanguage);
 
         return $metaModel;
     }
 
     /**
-     * Override the method to run the tests on the attribute factories to be tested.
+     * Mock the database connection.
      *
-     * @return IAttributeTypeFactory[]
+     * @return \PHPUnit_Framework_MockObject_MockObject|Connection
      */
-    protected function getAttributeFactories()
+    private function mockConnection()
     {
-        return [new AttributeTypeFactory()];
+        return $this->getMockBuilder(Connection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * Mock the table manipulator.
+     *
+     * @param Connection $connection The database connection mock.
+     *
+     * @return TableManipulator|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function mockTableManipulator(Connection $connection)
+    {
+        return $this->getMockBuilder(TableManipulator::class)
+            ->setConstructorArgs([$connection, []])
+            ->getMock();
     }
 
     /**
@@ -81,7 +92,10 @@ class TranslatedSelectAttributeTypeFactoryTest extends AttributeTypeFactoryTest
      */
     public function testCreateSelect()
     {
-        $factory   = new AttributeTypeFactory();
+        $connection  = $this->mockConnection();
+        $manipulator = $this->mockTableManipulator($connection);
+
+        $factory   = new AttributeTypeFactory($connection, $manipulator);
         $values    = [
             'select_table'  => 'tl_page',
             'select_column' => 'pid',
