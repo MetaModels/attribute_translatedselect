@@ -36,12 +36,13 @@
     "contao-community-alliance/dc-general": "~2.1@dev",
     "contao/core-bundle": "^4.4",
     "metamodels/attribute_select": "~2.1@dev",
-    "metamodels/core": "^2.1",
+    "metamodels/core": "^2.1@dev",
     "symfony/dependency-injection": "^3.3",
     "symfony/http-kernel": "^3.3"
   },
   "require-dev": {
     "contao/manager-plugin": "~2.1",
+    "menatwork/contao-multicolumnwizard-bundle": "^3.4.0@beta",
     "phpcq/all-tasks": "^1.2"
   },
   "autoload": {
@@ -64,18 +65,6 @@
         "dev-feature/contao4": "2.1.x-dev"
     }
   },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git@gitlab.com:metamodels/core.git"
-    },
-    {
-      "type": "vcs",
-      "url": "git@gitlab.com:metamodels/attribute_select.git"
-    }
-  ],
   "config": {
     "sort-packages": true
   }
