@@ -63,11 +63,10 @@
       }
     },
     "branch-alias": {
-      "dev-master": "2.0.x-dev",
-      "dev-develop": "2.1.x-dev"
+      "dev-support/2.0": "2.0.x-dev",
+      "dev-master": "2.1.x-dev"
     }
   },
-  "prefer-stable": true,
   "config": {
     "sort-packages": true
   }
