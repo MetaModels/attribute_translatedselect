@@ -14,42 +14,22 @@
  * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @author     Sven Baumann <baumann.sv@gmail.com>
+ * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2012-2019 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
 
-namespace MetaModels\DcGeneral\Events\Table\Attribute\TranslatedSelect;
+namespace MetaModels\AttributeTranslatedSelectBundle\EventListener;
 
 use ContaoCommunityAlliance\DcGeneral\Contao\View\Contao2BackendView\Event\GetPropertyOptionsEvent;
+use MetaModels\AttributeSelectBundle\EventListener\BackendEventsListener;
 
 /**
  * Handle events for tl_metamodel_attribute.
  */
-class Subscriber extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\Subscriber
+class PropertyOptionsListener extends BackendEventsListener
 {
-    /**
-     * Boot the system in the backend.
-     *
-     * @return void
-     */
-    protected function registerEventsInDispatcher()
-    {
-        $this
-            ->addListener(
-                GetPropertyOptionsEvent::NAME,
-                [$this, 'getTableNames']
-            )
-            ->addListener(
-                GetPropertyOptionsEvent::NAME,
-                [$this, 'getColumnNames']
-            )
-            ->addListener(
-                GetPropertyOptionsEvent::NAME,
-                [$this, 'getSourceColumnNames']
-            );
-    }
-
     /**
      * Retrieve all database table names.
      *
@@ -105,22 +85,52 @@ class Subscriber extends \MetaModels\DcGeneral\Events\Table\Attribute\Select\Sub
             return;
         }
 
-        $model    = $event->getModel();
-        $table    = $model->getProperty('tag_srctable');
-        $database = $this->getDatabase();
+        $model         = $event->getModel();
+        $table         = $model->getProperty('tag_srctable');
+        $schemaManager = $this->connection->getSchemaManager();
 
-        if (!$table || !$database->tableExists($table)) {
+        if (!$table || !$schemaManager->tablesExist([$table])) {
             return;
         }
 
         $result = [];
 
-        foreach ($database->listFields($table) as $arrInfo) {
-            if ($arrInfo['type'] != 'index') {
-                $result[$arrInfo['name']] = $arrInfo['name'];
-            }
+        foreach ($schemaManager->listTableColumns($table) as $column) {
+            $result[$column->getName()] = $column->getName();
         }
 
         $event->setOptions($result);
+    }
+
+    /**
+     * Retrieve all columns from a database table.
+     *
+     * @param string     $tableName  The database table name.
+     *
+     * @param array|null $typeFilter Optional of types to filter for.
+     *
+     * @return string[]
+     */
+    protected function getColumnNamesFromMetaModel($tableName, $typeFilter = null)
+    {
+        if (!$this->connection->getSchemaManager()->tablesExist([$tableName])) {
+            return array();
+        }
+
+        $result    = [];
+        $fieldList = $this->connection->getSchemaManager()->listTableColumns($tableName);
+
+        foreach ($fieldList as $column) {
+            if (($typeFilter === null) || in_array($column->getType()->getName(), $typeFilter)) {
+                $result[$column->getName()] = $column->getName();
+            }
+        }
+
+        if (!empty($result)) {
+            asort($result);
+            return $result;
+        }
+
+        return $result;
     }
 }

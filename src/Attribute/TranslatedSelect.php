@@ -18,15 +18,16 @@
  * @author     Paul Pflugradt <paulpflugradt@googlemail.com>
  * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @author     Sven Baumann <baumann.sv@gmail.com>
+ * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2012-2019 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
 
-namespace MetaModels\Attribute\TranslatedSelect;
+namespace MetaModels\AttributeTranslatedSelectBundle\Attribute;
 
 use MetaModels\Attribute\ITranslated;
-use MetaModels\Attribute\Select\Select;
+use MetaModels\AttributeSelectBundle\Attribute\Select;
 
 /**
  * This is the MetaModelAttribute class for handling translated select attributes.
@@ -74,62 +75,39 @@ class TranslatedSelect extends Select implements ITranslated
             $strColNameId  = 'id';
             $strSortColumn = $this->getSortingOverrideColumn();
 
-            return $this->getDatabase()
-                ->prepare(
-                    \sprintf(
-                        'SELECT %1$s.id FROM %1$s
-                    LEFT JOIN %3$s ON (%3$s.%4$s=%1$s.%2$s)
-                    WHERE %1$s.id IN (%5$s)
-                    ORDER BY %3$s.%6$s %7$s',
-                        // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
-                        $metaModel->getTableName(), // 1
-                        $this->getColName(),        // 2
-                        $strTableName,              // 3
-                        $strColNameId,              // 4
-                        \implode(',', $idList),      // 5
-                        $strSortColumn,             // 6
-                        $strDirection               // 7
-                    // @codingStandardsIgnoreEnd
-                    )
-                )
+            return $this->connection->createQueryBuilder()
+                ->select('m.id')
+                ->from($metaModel->getTableName(), 'm')
+                ->leftJoin('m', $strTableName, 't', sprintf('t.%s=m.%s', $strColNameId, $this->getColName()))
+                ->orderBy('t.' . $strSortColumn, $strDirection)
                 ->execute()
-                ->fetchEach('id');
+                ->fetchAll(\PDO::FETCH_COLUMN, 0);
         }
 
         $addWhere = $this->getAdditionalWhere();
-        $langSet  = \sprintf('\'%s\',\'%s\'', $metaModel->getActiveLanguage(), $metaModel->getFallbackLanguage());
-        $sorted   = $this->getDatabase()
-            ->prepare(
-                \sprintf(
-                    'SELECT %3$s.id
-                        FROM %3$s
-                        LEFT JOIN %1$s ON (%1$s.id = (SELECT
-                            %1$s.id
-                            FROM %1$s
-                            WHERE %5$s IN (%6$s)
-                            AND (%1$s.%2$s=%3$s.%4$s)
-                            %7$s
-                            ORDER BY FIELD(%1$s.%5$s,%6$s)
-                            LIMIT 1
-                        ))
-                        WHERE %3$s.id IN (%9$s)
-                        ORDER BY %1$s.%8$s %10$s',
-                    // @codingStandardsIgnoreStart - we want to keep the numbers at the end of the lines below.
-                    $this->getSelectSource(),                  // 1
-                    $this->getIdColumn(),                      // 2
-                    $this->getMetaModel()->getTableName(),     // 3
-                    $this->getColName(),                       // 4
-                    $this->getLanguageColumn(),                // 5
-                    $langSet,                                  // 6
-                    ($addWhere ? ' AND ('.$addWhere.')' : ''), // 7
-                    $this->getSortingColumn(),                 // 8
-                    $this->parameterMask($idList),             // 9
-                    $strDirection                              // 7
-                // @codingStandardsIgnoreEnd
-                )
-            )
-            ->execute($idList)
-            ->fetchEach('id');
+        $langSet  = sprintf('\'%s\',\'%s\'', $metaModel->getActiveLanguage(), $metaModel->getFallbackLanguage());
+
+        $subSelect = $this->connection->createQueryBuilder()
+            ->select('z.id')
+            ->from($this->getSelectSource(), 'z')
+            ->where($this->getLanguageColumn() . 'IN(:langset)')
+            ->andWhere('z.' . $this->getIdColumn() . '=m.' . $this->getColName())
+            ->orderBy(sprintf('FIELD(z.%s,%s)', $this->getLanguageColumn(), $langSet))
+            ->setMaxResults(1);
+
+        if ($addWhere) {
+            $subSelect->andWhere($addWhere);
+        }
+
+        $sorted = $this->connection->createQueryBuilder()
+            ->select('m.id')
+            ->from($this->getMetaModel()->getTableName(), 'm')
+            ->leftJoin('m', $this->getSelectSource(), 's', sprintf('s.id = (%s)', $subSelect->getSQL()))
+            ->where('m.id IN(:ids)')
+            ->orderBy('s.' . $this->getSortingColumn(), $strDirection)
+            ->setParameter('ids', $idList)
+            ->setParameter('langset', $langSet)
+            ->execute()->fetchAll(\PDO::FETCH_COLUMN, 0);
 
         return $sorted;
     }
@@ -166,22 +144,22 @@ class TranslatedSelect extends Select implements ITranslated
         }
 
         // Translate to current language.
-        $objValue = $this->getDatabase()
-            ->prepare(
-                \sprintf(
-                    'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s=?%4$s',
-                    $this->getSelectSource(),
-                    $this->getIdColumn(),
-                    $this->getLanguageColumn(),
-                    ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '')
-                )
-            )
-            ->execute(
-                $varValue[$this->getIdColumn()],
-                $this->getMetaModel()->getActiveLanguage()
-            );
+        $builder = $this->connection->createQueryBuilder()
+            ->select('s.*')
+            ->from($this->getSelectSource(), 's')
+            ->where($this->getIdColumn() . '=:id')
+            ->andWhere($this->getLanguageColumn() . '=:language')
+            ->setParameter('id', $varValue[$this->getIdColumn()])
+            ->setParameter('language', $this->getMetaModel()->getActiveLanguage());
 
-        return $objValue->$strColNameAlias;
+        if ($strColNameWhere) {
+            $builder->andWhere($strColNameWhere);
+        }
+
+        $statement = $builder->execute();
+        $result    = $statement->fetch(\PDO::FETCH_OBJ);
+
+        return $result->$strColNameAlias;
     }
 
     /**
@@ -189,36 +167,33 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function widgetToValue($varValue, $itemId)
     {
-        $objDB           = $this->getDatabase();
         $strColNameAlias = $this->getAliasColumn();
         $strColNameId    = $this->getIdColumn();
         $strColNameWhere = $this->getAdditionalWhere();
         $strColNameLang  = $this->getLanguageColumn();
-        $strLangSet      = \sprintf(
-            '\'%s\',\'%s\'',
-            $this->getMetaModel()->getActiveLanguage(),
-            $this->getMetaModel()->getFallbackLanguage()
-        );
 
         if (!$strColNameAlias) {
             $strColNameAlias = $strColNameId;
         }
 
-        // Lookup the id for this value.
-        $objValue = $objDB
-            ->prepare(
-                \sprintf(
-                    'SELECT %1$s.* FROM %1$s WHERE %2$s=? AND %3$s IN (%4$s)%5$s',
-                    $this->getSelectSource(),
-                    $strColNameAlias,
-                    $strColNameLang,
-                    $strLangSet,
-                    ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '')
-                )
-            )
-            ->execute($varValue);
+        $builder = $this->connection->createQueryBuilder()
+            ->select('*')
+            ->from($this->getSelectSource())
+            ->where($strColNameAlias . '=:alias')
+            ->andWhere($strColNameLang . 'IN(:languages)')
+            ->setParameter('alias', $varValue)
+            ->setParameter(
+                'languages',
+                [$this->getMetaModel()->getActiveLanguage(), $this->getMetaModel()->getFallbackLanguage()]
+            );
 
-        return $objValue->row();
+        if ($strColNameWhere) {
+            $builder->andWhere($strColNameWhere);
+        }
+
+        return $builder
+            ->execute()
+            ->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**
