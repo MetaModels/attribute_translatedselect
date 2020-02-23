@@ -8,18 +8,15 @@ services:
       - "@metamodels.filter_setting_factory"
       - "@translator"
     tags:
-      - {
-            name: kernel.event_listener,
-            event: 'dc-general.view.contao2backend.get-property-options',
-            method: getTableNames
-        }
-      - {
-            name: kernel.event_listener,
-            event: 'dc-general.view.contao2backend.get-property-options',
-            method: getColumnNames
-        }
-      - {
-            name: kernel.event_listener,
-            event: 'dc-general.view.contao2backend.get-property-options',
-            method: getSourceColumnNames
-        }
+      -
+        name: kernel.event_listener
+        event: 'dc-general.view.contao2backend.get-property-options'
+        method: getTableNames
+      -
+        name: kernel.event_listener
+        event: 'dc-general.view.contao2backend.get-property-options'
+        method: getColumnNames
+      -
+        name: kernel.event_listener
+        event: 'dc-general.view.contao2backend.get-property-options'
+        method: getSourceColumnNames
