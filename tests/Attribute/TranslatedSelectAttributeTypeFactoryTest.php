@@ -28,6 +28,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Test the attribute factory.
+ *
+ * @covers \MetaModels\AttributeTranslatedSelectBundle\Attribute\AttributeTypeFactory
  */
 class TranslatedSelectAttributeTypeFactoryTest extends TestCase
 {

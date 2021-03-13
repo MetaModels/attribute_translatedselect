@@ -26,6 +26,7 @@
 
 namespace MetaModels\AttributeTranslatedSelectBundle\Attribute;
 
+use Doctrine\DBAL\FetchMode;
 use MetaModels\Attribute\ITranslated;
 use MetaModels\AttributeSelectBundle\Attribute\Select;
 
@@ -81,7 +82,7 @@ class TranslatedSelect extends Select implements ITranslated
                 ->leftJoin('m', $strTableName, 't', sprintf('t.%s=m.%s', $strColNameId, $this->getColName()))
                 ->orderBy('t.' . $strSortColumn, $strDirection)
                 ->execute()
-                ->fetchAll(\PDO::FETCH_COLUMN, 0);
+                ->fetchAll(FetchMode::COLUMN, 0);
         }
 
         $addWhere = $this->getAdditionalWhere();
@@ -107,7 +108,7 @@ class TranslatedSelect extends Select implements ITranslated
             ->orderBy('s.' . $this->getSortingColumn(), $strDirection)
             ->setParameter('ids', $idList)
             ->setParameter('langset', $langSet)
-            ->execute()->fetchAll(\PDO::FETCH_COLUMN, 0);
+            ->execute()->fetchAll(FetchMode::COLUMN, 0);
 
         return $sorted;
     }
@@ -157,7 +158,7 @@ class TranslatedSelect extends Select implements ITranslated
         }
 
         $statement = $builder->execute();
-        $result    = $statement->fetch(\PDO::FETCH_OBJ);
+        $result    = $statement->fetch(FetchMode::STANDARD_OBJECT);
 
         return $result->$strColNameAlias;
     }
@@ -193,7 +194,7 @@ class TranslatedSelect extends Select implements ITranslated
 
         return $builder
             ->execute()
-            ->fetch(\PDO::FETCH_ASSOC);
+            ->fetch(FetchMode::ASSOCIATIVE);
     }
 
     /**
@@ -233,8 +234,8 @@ class TranslatedSelect extends Select implements ITranslated
         );
 
         if ($usedOnly) {
-            return $this
-                ->getDatabase()
+            $statement = $this
+                ->connection
                 ->prepare(
                     \sprintf(
                         'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
@@ -262,12 +263,13 @@ class TranslatedSelect extends Select implements ITranslated
                         $firstOrder                                // 9
                         // @codingStandardsIgnoreEnd
                     )
-                )
-                ->execute();
+                );
+            $statement->execute();
+            return $statement;
         }
 
-        return $this
-            ->getDatabase()
+        $statement = $this
+            ->connection
             ->prepare(
                 \sprintf(
                     'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
@@ -286,8 +288,9 @@ class TranslatedSelect extends Select implements ITranslated
                     $firstOrder                                // 7
                     // @codingStandardsIgnoreEnd
                 )
-            )
-            ->execute();
+            );
+        $statement->execute();
+        return $statement;
     }
 
     /**
@@ -317,7 +320,7 @@ class TranslatedSelect extends Select implements ITranslated
             );
 
             $objValue = $this
-                ->getDatabase()
+                ->connection
                 ->prepare(
                     \sprintf(
                         'SELECT COUNT(%1$s.%2$s) as mm_count, %1$s.*
@@ -347,8 +350,8 @@ class TranslatedSelect extends Select implements ITranslated
                         $this->getFilterOptionsOrderBy()                             // 10
                         // @codingStandardsIgnoreEnd
                     )
-                )
-                ->execute($this->get('id'));
+                );
+            $objValue->execute([$this->get('id')]);
         } else {
             $objValue = $this->getFilterOptionsForUsedOnly($usedOnly);
         }
@@ -411,7 +414,6 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function searchForInLanguages($strPattern, $arrLanguages = [])
     {
-        $objDB              = $this->getDatabase();
         $strTableNameId     = $this->getSelectSource();
         $strColNameId       = $this->getIdColumn();
         $strColNameLangCode = $this->getLanguageColumn();
@@ -428,7 +430,7 @@ class TranslatedSelect extends Select implements ITranslated
 
             // Using aliased join here to resolve issue #3 for normal select attributes
             // (SQL error for self referencing table).
-            $objValue = $objDB->prepare(\sprintf(
+            $objValue = $this->connection->prepare(\sprintf(
                 'SELECT sourceTable.*, %2$s.id AS %3$s
                 FROM %1$s sourceTable
                 RIGHT JOIN %2$s ON (sourceTable.%4$s=%2$s.%5$s)
@@ -446,11 +448,11 @@ class TranslatedSelect extends Select implements ITranslated
                 $strColAlias,                                         // 9
                 ($strColNameWhere ? ('AND ' . $strColNameWhere) : '') // 10
             // @codingStandardsIgnoreEnd
-            ))
-            ->execute($strPattern, $strPattern);
+            ));
+            $objValue->execute([$strPattern, $strPattern]);
 
-            while ($objValue->next()) {
-                $arrReturn[] = $objValue->$strMetaModelTableNameId;
+            while ($value = $objValue->fetch(FetchMode::ASSOCIATIVE)) {
+                $arrReturn[] = $value[$strMetaModelTableNameId];
             }
         }
         return $arrReturn;
@@ -466,7 +468,6 @@ class TranslatedSelect extends Select implements ITranslated
         $strColNameId          = $this->getIdColumn();
 
         if ($strTableName && $strColNameId) {
-            $objDB    = $this->getDatabase();
             $strQuery = \sprintf(
                 'UPDATE %1$s SET %2$s=? WHERE %1$s.id=?',
                 $strMetaModelTableName,
@@ -474,7 +475,7 @@ class TranslatedSelect extends Select implements ITranslated
             );
 
             foreach ($arrValues as $intItemId => $arrValue) {
-                $objDB->prepare($strQuery)->execute($arrValue[$strColNameId], $intItemId);
+                $this->connection->prepare($strQuery)->execute([$arrValue[$strColNameId], $intItemId]);
             }
         }
     }
@@ -484,7 +485,6 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function getTranslatedDataFor($arrIds, $strLangCode)
     {
-        $objDB              = $this->getDatabase();
         $strTableNameId     = $this->getSelectSource();
         $strColNameId       = $this->getIdColumn();
         $strColNameLangCode = $this->getLanguageColumn();
@@ -497,7 +497,7 @@ class TranslatedSelect extends Select implements ITranslated
 
             // Using aliased join here to resolve issue #3 for normal select attributes
             // (SQL error for self referencing table).
-            $objValue = $objDB->prepare(\sprintf(
+            $objValue = $this->connection->prepare(\sprintf(
                 'SELECT sourceTable.*, %2$s.id AS %3$s
                 FROM %1$s sourceTable
                 LEFT JOIN %2$s
@@ -513,10 +513,10 @@ class TranslatedSelect extends Select implements ITranslated
                 $strColNameLangCode,                                    // 7
                 ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') // 8
             // @codingStandardsIgnoreEnd
-            ))
-                ->execute($strLangCode);
-            while ($objValue->next()) {
-                $arrReturn[$objValue->$strMetaModelTableNameId] = $objValue->row();
+            ));
+            $objValue->execute([$strLangCode]);
+            while ($value = $objValue->fetch(FetchMode::ASSOCIATIVE)) {
+                $arrReturn[$value[$strMetaModelTableNameId]] = $value;
             }
         }
         return $arrReturn;
