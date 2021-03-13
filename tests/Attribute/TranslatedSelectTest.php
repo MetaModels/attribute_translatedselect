@@ -27,6 +27,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests to test class Select.
+ *
+ * @covers \MetaModels\AttributeTranslatedSelectBundle\Attribute\TranslatedSelect
  */
 class TranslatedSelectTest extends TestCase
 {
