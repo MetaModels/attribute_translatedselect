@@ -3,7 +3,7 @@
 /**
  * This file is part of MetaModels/attribute_translatedselect.
  *
- * (c) 2012-2021 The MetaModels team.
+ * (c) 2012-2022 The MetaModels team.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -20,7 +20,7 @@
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @author     Ingolf Steinhardt <info@e-spin.de>
- * @copyright  2012-2021 The MetaModels team.
+ * @copyright  2012-2022 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
@@ -82,8 +82,8 @@ class TranslatedSelect extends Select implements ITranslated
                 ->from($metaModel->getTableName(), 'm')
                 ->leftJoin('m', $strTableName, 't', sprintf('t.%s=m.%s', $strColNameId, $this->getColName()))
                 ->orderBy('t.' . $strSortColumn, $strDirection)
-                ->execute()
-                ->fetchAll(FetchMode::COLUMN, 0);
+                ->executeQuery()
+                ->fetchFirstColumn();
         }
 
         $addWhere = $this->getAdditionalWhere();
@@ -109,7 +109,7 @@ class TranslatedSelect extends Select implements ITranslated
             ->orderBy('s.' . $this->getSortingColumn(), $strDirection)
             ->setParameter('ids', $idList)
             ->setParameter('langset', $langSet)
-            ->execute()->fetchAll(FetchMode::COLUMN, 0);
+            ->executeQuery()->fetchFirstColumn();
 
         return $sorted;
     }
@@ -134,6 +134,10 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function valueToWidget($varValue)
     {
+        if (empty($varValue)) {
+            return null;
+        }
+
         $strColNameWhere = $this->getAdditionalWhere();
         $strColNameAlias = $this->getAliasColumn();
         if (!$strColNameAlias) {
@@ -158,10 +162,10 @@ class TranslatedSelect extends Select implements ITranslated
             $builder->andWhere($strColNameWhere);
         }
 
-        $statement = $builder->execute();
-        $result    = $statement->fetch(FetchMode::STANDARD_OBJECT);
+        $statement = $builder->executeQuery();
+        $result    = $statement->fetchAssociative();
 
-        return $result->$strColNameAlias;
+        return $result[$strColNameAlias];
     }
 
     /**
@@ -194,8 +198,8 @@ class TranslatedSelect extends Select implements ITranslated
         }
 
         return $builder
-            ->execute()
-            ->fetch(FetchMode::ASSOCIATIVE);
+            ->executeQuery()
+            ->fetchAssociative();
     }
 
     /**
@@ -265,8 +269,9 @@ class TranslatedSelect extends Select implements ITranslated
                         // @codingStandardsIgnoreEnd
                     )
                 );
-            $statement->execute();
-            return $statement;
+            $result = $statement->executeQuery();
+
+            return $result;
         }
 
         $statement = $this
@@ -290,8 +295,9 @@ class TranslatedSelect extends Select implements ITranslated
                     // @codingStandardsIgnoreEnd
                 )
             );
-        $statement->execute();
-        return $statement;
+        $result = $statement->executeQuery();
+
+        return $result;
     }
 
     /**
@@ -352,7 +358,7 @@ class TranslatedSelect extends Select implements ITranslated
                         // @codingStandardsIgnoreEnd
                     )
                 );
-            $objValue->execute([$this->get('id')]);
+            $objValue->executeQuery([$this->get('id')]);
         } else {
             $objValue = $this->getFilterOptionsForUsedOnly($usedOnly);
         }
@@ -450,9 +456,8 @@ class TranslatedSelect extends Select implements ITranslated
                 ($strColNameWhere ? ('AND ' . $strColNameWhere) : '') // 10
             // @codingStandardsIgnoreEnd
             ));
-            $objValue->execute([$strPattern, $strPattern]);
 
-            while ($value = $objValue->fetch(FetchMode::ASSOCIATIVE)) {
+            while ($value = $objValue->executeQuery([$strPattern, $strPattern])->fetchAssociative()) {
                 $arrReturn[] = $value[$strMetaModelTableNameId];
             }
         }
@@ -515,8 +520,8 @@ class TranslatedSelect extends Select implements ITranslated
                 ($strColNameWhere ? ' AND ('.$strColNameWhere.')' : '') // 8
             // @codingStandardsIgnoreEnd
             ));
-            $objValue->execute([$strLangCode]);
-            while ($value = $objValue->fetch(FetchMode::ASSOCIATIVE)) {
+
+            while ($value = $objValue->executeQuery([$strLangCode])->fetchAssociative()) {
                 $arrReturn[$value[$strMetaModelTableNameId]] = $value;
             }
         }
