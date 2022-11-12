@@ -6,7 +6,5 @@ exclude:
 
 mapping:
   'Andreas Isaak <info@andreas-isaak.de>': 'Andreas Isaak <andy.jared@googlemail.com>'
-
-mapping:
   'Ingolf Steinhardt <info@e-spin.de>':
     - 'zonky2 <info@e-spin.de>'
