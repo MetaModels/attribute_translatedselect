@@ -3,7 +3,7 @@
 /**
  * This file is part of MetaModels/attribute_translatedselect.
  *
- * (c) 2012-2019 The MetaModels team.
+ * (c) 2012-2021 The MetaModels team.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,7 +19,8 @@
  * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2012-2019 The MetaModels team.
+ * @author     Ingolf Steinhardt <info@e-spin.de>
+ * @copyright  2012-2021 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
@@ -91,7 +92,7 @@ class TranslatedSelect extends Select implements ITranslated
         $subSelect = $this->connection->createQueryBuilder()
             ->select('z.id')
             ->from($this->getSelectSource(), 'z')
-            ->where($this->getLanguageColumn() . 'IN(:langset)')
+            ->where($this->getLanguageColumn() . ' IN (:langset)')
             ->andWhere('z.' . $this->getIdColumn() . '=m.' . $this->getColName())
             ->orderBy(sprintf('FIELD(z.%s,%s)', $this->getLanguageColumn(), $langSet))
             ->setMaxResults(1);
@@ -104,7 +105,7 @@ class TranslatedSelect extends Select implements ITranslated
             ->select('m.id')
             ->from($this->getMetaModel()->getTableName(), 'm')
             ->leftJoin('m', $this->getSelectSource(), 's', sprintf('s.id = (%s)', $subSelect->getSQL()))
-            ->where('m.id IN(:ids)')
+            ->where('m.id IN (:ids)')
             ->orderBy('s.' . $this->getSortingColumn(), $strDirection)
             ->setParameter('ids', $idList)
             ->setParameter('langset', $langSet)
@@ -181,7 +182,7 @@ class TranslatedSelect extends Select implements ITranslated
             ->select('*')
             ->from($this->getSelectSource())
             ->where($strColNameAlias . '=:alias')
-            ->andWhere($strColNameLang . 'IN(:languages)')
+            ->andWhere($strColNameLang . ' IN (:languages)')
             ->setParameter('alias', $varValue)
             ->setParameter(
                 'languages',
