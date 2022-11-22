@@ -12,6 +12,7 @@
  *
  * @package    MetaModels/attribute_translatedselect
  * @author     David Molineus <david.molineus@netzmacht.de>
+ * @author     Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @author     Ingolf Steinhardt <info@e-spin.de>
  * @copyright  2012-2022 The MetaModels team.
