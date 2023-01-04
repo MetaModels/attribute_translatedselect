@@ -91,7 +91,7 @@ class TranslatedSelect extends Select implements ITranslated
         $subSelect = $this->connection->createQueryBuilder()
             ->select('z.id')
             ->from($this->getSelectSource(), 'z')
-            ->where($this->getLanguageColumn() . 'IN(:langset)')
+            ->where($this->getLanguageColumn() . ' IN(:langset)')
             ->andWhere('z.' . $this->getIdColumn() . '=m.' . $this->getColName())
             ->orderBy(sprintf('FIELD(z.%s,%s)', $this->getLanguageColumn(), $langSet))
             ->setMaxResults(1);
@@ -181,7 +181,7 @@ class TranslatedSelect extends Select implements ITranslated
             ->select('*')
             ->from($this->getSelectSource())
             ->where($strColNameAlias . '=:alias')
-            ->andWhere($strColNameLang . 'IN(:languages)')
+            ->andWhere($strColNameLang . ' IN(:languages)')
             ->setParameter('alias', $varValue)
             ->setParameter(
                 'languages',
