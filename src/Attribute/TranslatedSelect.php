@@ -3,7 +3,7 @@
 /**
  * This file is part of MetaModels/attribute_translatedselect.
  *
- * (c) 2012-2022 The MetaModels team.
+ * (c) 2012-2024 The MetaModels team.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -20,20 +20,22 @@
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @author     Ingolf Steinhardt <info@e-spin.de>
- * @copyright  2012-2022 The MetaModels team.
+ * @copyright  2012-2024 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
 
 namespace MetaModels\AttributeTranslatedSelectBundle\Attribute;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\ArrayParameterType;
 use MetaModels\Attribute\ITranslated;
 use MetaModels\AttributeSelectBundle\Attribute\Select;
 
 /**
  * This is the MetaModelAttribute class for handling translated select attributes.
+ *
+ * @SuppressWarnings(PHPMD.LongVariable)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class TranslatedSelect extends Select implements ITranslated
 {
@@ -88,7 +90,8 @@ class TranslatedSelect extends Select implements ITranslated
         }
 
         $addWhere = $this->getAdditionalWhere();
-        $langSet  = sprintf('\'%s\',\'%s\'', $metaModel->getActiveLanguage(), $metaModel->getFallbackLanguage());
+        /** @psalm-suppress DeprecatedMethod */
+        $langSet = \sprintf('\'%s\',\'%s\'', $metaModel->getActiveLanguage(), $metaModel->getFallbackLanguage() ?? '');
 
         $subSelect = $this->connection->createQueryBuilder()
             ->select('z.id')
@@ -105,7 +108,7 @@ class TranslatedSelect extends Select implements ITranslated
         $sorted = $this->connection->createQueryBuilder()
             ->select('m.id')
             ->from($this->getMetaModel()->getTableName(), 'm')
-            ->leftJoin('m', $this->getSelectSource(), 's', sprintf('s.id = (%s)', $subSelect->getSQL()))
+            ->leftJoin('m', $this->getSelectSource(), 's', \sprintf('s.id = (%s)', $subSelect->getSQL()))
             ->where('m.id IN (:ids)')
             ->orderBy('s.' . $this->getSortingColumn(), $strDirection)
             ->setParameter('ids', $idList)
@@ -142,10 +145,9 @@ class TranslatedSelect extends Select implements ITranslated
         $tableName   = $this->getSelectSource();
         $idColumn    = $this->getIdColumn();
         $aliasColumn = $this->getAliasColumn();
-        $valueColumn = $this->getValueColumn();
         $langColumn  = $this->getLanguageColumn();
-        $sortColumn  = $this->getSortingColumn();
 
+        /** @psalm-suppress DeprecatedMethod */
         $builder = $this->connection->createQueryBuilder()
             ->select(\sprintf('IFNULL (j.%1$s, t.%1$s) as %1$s', $aliasColumn))
             ->from($tableName, 't')
@@ -186,6 +188,7 @@ class TranslatedSelect extends Select implements ITranslated
             $strColNameAlias = $strColNameId;
         }
 
+        /** @psalm-suppress DeprecatedMethod */
         $builder = $this->connection->createQueryBuilder()
             ->select('t.*')
             ->from($this->getSelectSource(), 't')
@@ -195,7 +198,7 @@ class TranslatedSelect extends Select implements ITranslated
             ->setParameter(
                 'languages',
                 [$this->getMetaModel()->getActiveLanguage(), $this->getMetaModel()->getFallbackLanguage()],
-                Connection::PARAM_STR_ARRAY
+                ArrayParameterType::STRING
             );
 
         if ($strColNameWhere) {
@@ -203,7 +206,6 @@ class TranslatedSelect extends Select implements ITranslated
         }
 
         if (false === ($result = $builder->executeQuery()->fetchAssociative())) {
-
             return null;
         }
 
@@ -243,6 +245,7 @@ class TranslatedSelect extends Select implements ITranslated
         $sortColumn  = $this->getSortingColumn();
 
         $builder = $this->connection->createQueryBuilder();
+        /** @psalm-suppress DeprecatedMethod */
         $builder
             ->select(
                 \sprintf(
@@ -277,9 +280,7 @@ class TranslatedSelect extends Select implements ITranslated
             $builder->andWhere($builder->expr()->in('t.' . $idColumn, $subSelect->getSQL()));
         }
 
-        $result = $builder->executeQuery();
-
-        return $result;
+        return $builder->executeQuery();
     }
 
     /**
@@ -302,10 +303,11 @@ class TranslatedSelect extends Select implements ITranslated
 
         if ($idList) {
             $strColNameWhere = $this->getAdditionalWhere();
-            $strLangSet      = \sprintf(
+            /** @psalm-suppress DeprecatedMethod */
+            $strLangSet = \sprintf(
                 '\'%s\',\'%s\'',
                 $this->getMetaModel()->getActiveLanguage(),
-                $this->getMetaModel()->getFallbackLanguage()
+                $this->getMetaModel()->getFallbackLanguage() ?? ''
             );
 
             $objValue = $this
@@ -331,7 +333,7 @@ class TranslatedSelect extends Select implements ITranslated
                         $strColNameId,                                               // 2
                         $this->getMetaModel()->getTableName(),                       // 3
                         $this->getColName(),                                         // 4
-                        \implode(',', $idList),                              // 5
+                        \implode(',', $idList),                             // 5
                         ($strColNameWhere ? ' AND (' . $strColNameWhere . ')' : ''), // 6
                         $this->getLanguageColumn(),                                  // 7
                         $strLangSet,                                                 // 8
@@ -355,6 +357,7 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function searchFor($strPattern)
     {
+        /** @psalm-suppress DeprecatedMethod */
         return $this->searchForInLanguages($strPattern, [$this->getMetaModel()->getActiveLanguage()]);
     }
 
@@ -363,13 +366,15 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function getDataFor($arrIds)
     {
-        $strActiveLanguage   = $this->getMetaModel()->getActiveLanguage();
+        /** @psalm-suppress DeprecatedMethod */
+        $strActiveLanguage = $this->getMetaModel()->getActiveLanguage();
+        /** @psalm-suppress DeprecatedMethod */
         $strFallbackLanguage = $this->getMetaModel()->getFallbackLanguage();
 
         $arrReturn = $this->getTranslatedDataFor($arrIds, $strActiveLanguage);
 
         // Second round, fetch fallback languages if not all items could be resolved.
-        if ((\count($arrReturn) < \count($arrIds)) && ($strActiveLanguage != $strFallbackLanguage)) {
+        if ((\count($arrReturn) < \count($arrIds)) && ($strActiveLanguage !== $strFallbackLanguage)) {
             $arrFallbackIds = [];
             foreach ($arrIds as $intId) {
                 if (empty($arrReturn[$intId])) {
@@ -393,6 +398,7 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function setDataFor($arrValues)
     {
+        /** @psalm-suppress DeprecatedMethod */
         $this->setTranslatedDataFor($arrValues, $this->getMetaModel()->getActiveLanguage());
     }
 
@@ -409,8 +415,9 @@ class TranslatedSelect extends Select implements ITranslated
         $strColValue        = $this->getValueColumn();
         $strColAlias        = $this->getAliasColumn();
         $strColNameWhere    = $this->getAdditionalWhere();
-        $fallbackLanguage   = $this->getMetaModel()->getFallbackLanguage();
-        $arrReturn          = [];
+        /** @psalm-suppress DeprecatedMethod */
+        $fallbackLanguage = $this->getMetaModel()->getFallbackLanguage();
+        $arrReturn        = [];
 
         if ($strTableNameId && $strColNameId) {
             $strMetaModelTableName   = $this->getMetaModel()->getTableName();
@@ -419,6 +426,7 @@ class TranslatedSelect extends Select implements ITranslated
             $strPattern = \str_replace(['*', '?'], ['%', '_'], $strPattern);
 
             if (!\in_array($fallbackLanguage, $arrLanguages)) {
+                /** @psalm-suppress DeprecatedMethod */
                 $arrLanguages[] = $this->getMetaModel()->getFallbackLanguage();
             }
 
@@ -510,7 +518,7 @@ class TranslatedSelect extends Select implements ITranslated
                     $strMetaModelTableNameId,                                   // 3
                     $strColNameId,                                              // 4
                     $this->getColName(),                                        // 5
-                    \implode(',', $arrIds),                             // 6
+                    \implode(',', $arrIds),                            // 6
                     $strColNameLangCode,                                        // 7
                     ($strColNameWhere ? ' AND (' . $strColNameWhere . ')' : '') // 8
                 // @codingStandardsIgnoreEnd

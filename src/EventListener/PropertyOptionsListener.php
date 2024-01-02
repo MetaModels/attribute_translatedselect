@@ -3,7 +3,7 @@
 /**
  * This file is part of MetaModels/attribute_translatedselect.
  *
- * (c) 2012-2019 The MetaModels team.
+ * (c) 2012-2024 The MetaModels team.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,7 +15,8 @@
  * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2012-2019 The MetaModels team.
+ * @author     Ingolf Steinhardt <info@e-spin.de>
+ * @copyright  2012-2024 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
@@ -23,6 +24,7 @@
 namespace MetaModels\AttributeTranslatedSelectBundle\EventListener;
 
 use ContaoCommunityAlliance\DcGeneral\Contao\View\Contao2BackendView\Event\GetPropertyOptionsEvent;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\ContainerInterface;
 use MetaModels\AttributeSelectBundle\EventListener\BackendEventsListener;
 
 /**
@@ -39,8 +41,13 @@ class PropertyOptionsListener extends BackendEventsListener
      */
     public function getTableNames(GetPropertyOptionsEvent $event)
     {
-        if (($event->getEnvironment()->getDataDefinition()->getName() !== 'tl_metamodel_attribute')
-            || ($event->getPropertyName() !== 'select_srctable')) {
+        $dataDefinition = $event->getEnvironment()->getDataDefinition();
+        assert($dataDefinition instanceof ContainerInterface);
+
+        if (
+            ($dataDefinition->getName() !== 'tl_metamodel_attribute')
+            || ($event->getPropertyName() !== 'select_srctable')
+        ) {
             return;
         }
 
@@ -56,7 +63,11 @@ class PropertyOptionsListener extends BackendEventsListener
      */
     public function getColumnNames(GetPropertyOptionsEvent $event)
     {
-        if (($event->getEnvironment()->getDataDefinition()->getName() !== 'tl_metamodel_attribute')
+        $dataDefinition = $event->getEnvironment()->getDataDefinition();
+        assert($dataDefinition instanceof ContainerInterface);
+
+        if (
+            ($dataDefinition->getName() !== 'tl_metamodel_attribute')
             || ($event->getPropertyName() !== 'select_langcolumn')
         ) {
             return;
@@ -79,7 +90,11 @@ class PropertyOptionsListener extends BackendEventsListener
      */
     public function getSourceColumnNames(GetPropertyOptionsEvent $event)
     {
-        if (($event->getEnvironment()->getDataDefinition()->getName() !== 'tl_metamodel_attribute')
+        $dataDefinition = $event->getEnvironment()->getDataDefinition();
+        assert($dataDefinition instanceof ContainerInterface);
+
+        if (
+            ($dataDefinition->getName() !== 'tl_metamodel_attribute')
             || ($event->getPropertyName() !== 'select_srcsorting')
         ) {
             return;
@@ -87,7 +102,7 @@ class PropertyOptionsListener extends BackendEventsListener
 
         $model         = $event->getModel();
         $table         = $model->getProperty('tag_srctable');
-        $schemaManager = $this->connection->getSchemaManager();
+        $schemaManager = $this->connection->createSchemaManager();
 
         if (!$table || !$schemaManager->tablesExist([$table])) {
             return;
@@ -106,28 +121,28 @@ class PropertyOptionsListener extends BackendEventsListener
      * Retrieve all columns from a database table.
      *
      * @param string     $tableName  The database table name.
-     *
      * @param array|null $typeFilter Optional of types to filter for.
      *
      * @return string[]
      */
     protected function getColumnNamesFromMetaModel($tableName, $typeFilter = null)
     {
-        if (!$this->connection->getSchemaManager()->tablesExist([$tableName])) {
+        if (!$this->connection->createSchemaManager()->tablesExist([$tableName])) {
             return array();
         }
 
         $result    = [];
-        $fieldList = $this->connection->getSchemaManager()->listTableColumns($tableName);
+        $fieldList = $this->connection->createSchemaManager()->listTableColumns($tableName);
 
         foreach ($fieldList as $column) {
-            if (($typeFilter === null) || in_array($column->getType()->getName(), $typeFilter)) {
+            /** @psalm-suppress DeprecatedMethod */
+            if (($typeFilter === null) || \in_array($column->getType()->getName(), $typeFilter)) {
                 $result[$column->getName()] = $column->getName();
             }
         }
 
         if (!empty($result)) {
-            asort($result);
+            \asort($result);
             return $result;
         }
 
