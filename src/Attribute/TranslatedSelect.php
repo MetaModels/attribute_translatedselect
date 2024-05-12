@@ -52,7 +52,7 @@ class TranslatedSelect extends Select implements ITranslated
     /**
      * Determine the correct sorting table to use.
      *
-     * @return string
+     * @return string|false
      */
     protected function getSortingOverrideTable()
     {
@@ -76,7 +76,7 @@ class TranslatedSelect extends Select implements ITranslated
     {
         $metaModel    = $this->getMetaModel();
         $strTableName = $this->getSortingOverrideTable();
-        if ($strTableName) {
+        if (false !== $strTableName && '' !== $strTableName) {
             $strColNameId  = 'id';
             $strSortColumn = $this->getSortingOverrideColumn();
 
@@ -105,7 +105,8 @@ class TranslatedSelect extends Select implements ITranslated
             $subSelect->andWhere($addWhere);
         }
 
-        $sorted = $this->connection->createQueryBuilder()
+        $statement = $this->connection
+            ->createQueryBuilder()
             ->select('m.id')
             ->from($this->getMetaModel()->getTableName(), 'm')
             ->leftJoin('m', $this->getSelectSource(), 's', \sprintf('s.id = (%s)', $subSelect->getSQL()))
@@ -113,9 +114,10 @@ class TranslatedSelect extends Select implements ITranslated
             ->orderBy('s.' . $this->getSortingColumn(), $strDirection)
             ->setParameter('ids', $idList)
             ->setParameter('langset', $langSet)
-            ->executeQuery()->fetchFirstColumn();
+            ->executeQuery();
 
-        return $sorted;
+        // Return value list as list<mixed>, parent function wants a list<string> so we make a cast.
+        return \array_map(static fn (mixed $value) => (string) $value, $statement->fetchFirstColumn());
     }
 
     /**
@@ -219,12 +221,12 @@ class TranslatedSelect extends Select implements ITranslated
      */
     protected function getFilterOptionsOrderBy()
     {
-        if ($this->getSortingOverrideTable() && $this->getSortingOverrideColumn()) {
+        if (false !== ($table = $this->getSortingOverrideTable()) && $this->getSortingOverrideColumn()) {
             return \sprintf(
                 'FIELD(%s.id, (SELECT GROUP_CONCAT(id ORDER BY %s) FROM %s)),',
                 $this->getSelectSource(),
                 $this->getSortingOverrideColumn(),
-                $this->getSortingOverrideTable()
+                $table
             );
         }
 
@@ -369,7 +371,7 @@ class TranslatedSelect extends Select implements ITranslated
         /** @psalm-suppress DeprecatedMethod */
         $strActiveLanguage = $this->getMetaModel()->getActiveLanguage();
         /** @psalm-suppress DeprecatedMethod */
-        $strFallbackLanguage = $this->getMetaModel()->getFallbackLanguage();
+        $strFallbackLanguage = $this->getMetaModel()->getFallbackLanguage() ?? 'en';
 
         $arrReturn = $this->getTranslatedDataFor($arrIds, $strActiveLanguage);
 
@@ -459,7 +461,7 @@ class TranslatedSelect extends Select implements ITranslated
             }
 
             foreach ($result as $value) {
-                $arrReturn[] = $value[$strMetaModelTableNameId];
+                $arrReturn[] = (string) $value[$strMetaModelTableNameId];
             }
         }
 
