@@ -13,8 +13,8 @@ nbproject/
 
 # composer related
 vendor/
+composer.lock
 
 # build
-build/
-composer.lock
 .phpunit.result.cache
+/.phpcq/*
