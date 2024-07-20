@@ -3,7 +3,7 @@
 /**
  * This file is part of MetaModels/attribute_translatedselect.
  *
- * (c) 2012-2019 The MetaModels team.
+ * (c) 2012-2024 The MetaModels team.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +17,8 @@
  * @author     Stefan Heimes <stefan_heimes@hotmail.com>
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2012-2019 The MetaModels team.
+ * @author     Ingolf Steinhardt <info@e-spin.de>
+ * @copyright  2012-2024 The MetaModels team.
  * @license    https://github.com/MetaModels/attribute_translatedselect/blob/master/LICENSE LGPL-3.0-or-later
  * @filesource
  */
@@ -31,43 +32,46 @@ $GLOBALS['TL_DCA']['tl_metamodel_attribute']['metapalettes']['translatedselect e
 ];
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_langcolumn'] = [
-    'label'                  => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_langcolumn'],
-    'exclude'                => true,
-    'inputType'              => 'select',
-    'eval'                   => [
-        'mandatory'          => true,
-        'alwaysSave'         => true,
-        'submitOnChange'     => true,
-        'tl_class'           => 'w50',
-        'chosen'             => 'true'
+    'label'       => 'select_langcolumn.label',
+    'description' => 'select_langcolumn.description',
+    'exclude'     => true,
+    'inputType'   => 'select',
+    'eval'        => [
+        'mandatory'      => true,
+        'alwaysSave'     => true,
+        'submitOnChange' => true,
+        'tl_class'       => 'w50',
+        'chosen'         => 'true'
     ],
-    'sql'                    => 'varchar(255) NOT NULL default \'\''
+    'sql'         => 'varchar(255) NOT NULL default \'\''
 ];
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srctable'] = [
-    'label'                  => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srctable'],
-    'exclude'                => true,
-    'inputType'              => 'select',
-    'eval'                   => [
+    'label'       => 'select_srctable.label',
+    'description' => 'select_srctable.description',
+    'exclude'     => true,
+    'inputType'   => 'select',
+    'eval'        => [
         'includeBlankOption' => true,
         'alwaysSave'         => true,
         'submitOnChange'     => true,
         'tl_class'           => 'w50',
         'chosen'             => 'true'
     ],
-    'sql'                    => 'varchar(255) NOT NULL default \'\''
+    'sql'         => 'varchar(255) NOT NULL default \'\''
 ];
 
 $GLOBALS['TL_DCA']['tl_metamodel_attribute']['fields']['select_srcsorting'] = [
-    'label'                 => &$GLOBALS['TL_LANG']['tl_metamodel_attribute']['select_srcsorting'],
-    'exclude'               => true,
-    'inputType'             => 'select',
-    'eval'                  => [
+    'label'       => 'select_srcsorting.label',
+    'description' => 'select_srcsorting.description',
+    'exclude'     => true,
+    'inputType'   => 'select',
+    'eval'        => [
         'includeBlankOption' => true,
         'alwaysSave'         => true,
         'submitOnChange'     => true,
         'tl_class'           => 'w50',
         'chosen'             => 'true'
     ],
-    'sql'                    => 'varchar(255) NOT NULL default \'\''
+    'sql'         => 'varchar(255) NOT NULL default \'\''
 ];
