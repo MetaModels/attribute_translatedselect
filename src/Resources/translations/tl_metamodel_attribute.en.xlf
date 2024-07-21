@@ -2,8 +2,8 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" datatype="plaintext" original="src/Resources/translations/tl_metamodel_attribute.en.xlf">
     <body>
-      <trans-unit id="typeOptions.select" resname="typeOptions.select">
-        <source>Select</source>
+      <trans-unit id="typeOptions.translatedselect" resname="typeOptions.translatedselect">
+        <source>Translated select</source>
       </trans-unit>
       <trans-unit id="select_langcolumn.label" resname="select_langcolumn.label">
         <source>Language column</source>
