@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="src/Resources/translations/tl_metamodel_attribute.en.xlf">
+    <body>
+      <trans-unit id="typeOptions.translatedselect" resname="typeOptions.translatedselect">
+        <source>Translated select</source>
+      </trans-unit>
+      <trans-unit id="select_langcolumn.label" resname="select_langcolumn.label">
+        <source>Language column</source>
+      </trans-unit>
+      <trans-unit id="select_langcolumn.description" resname="select_langcolumn.description">
+        <source>Please select the language column.</source>
+      </trans-unit>
+      <trans-unit id="select_srctable.label" resname="select_srctable.label">
+        <source>Untranslated table for sorting</source>
+      </trans-unit>
+      <trans-unit id="select_srctable.description" resname="select_srctable.description">
+        <source>Please specify the table that provides the sorting column.</source>
+      </trans-unit>
+      <trans-unit id="select_srcsorting.label" resname="select_srcsorting.label">
+        <source>Sorting column</source>
+      </trans-unit>
+      <trans-unit id="select_srcsorting.description" resname="select_srcsorting.description">
+        <source>Please specify which column of the untranslated table shall be used for sorting.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
