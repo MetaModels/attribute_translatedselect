@@ -357,7 +357,8 @@ class TranslatedSelect extends Select implements ITranslated
      */
     public function searchFor($strPattern)
     {
-        return $this->searchForInLanguages($strPattern, [$this->getActiveLanguage()]);
+        return null;
+        // return $this->searchForInLanguages($strPattern, [$this->getActiveLanguage()]);
     }
 
     /**
@@ -546,12 +547,14 @@ class TranslatedSelect extends Select implements ITranslated
         if ($metaModel instanceof ITranslatedMetaModel) {
             $language = $metaModel->getLanguage();
             assert('' !== $language);
+
             return $language;
         }
 
         /** @psalm-suppress DeprecatedMethod */
         $language = $metaModel->getActiveLanguage();
         assert('' !== $language);
+
         return $language;
     }
 
@@ -562,12 +565,14 @@ class TranslatedSelect extends Select implements ITranslated
         if ($metaModel instanceof ITranslatedMetaModel) {
             $language = $metaModel->getMainLanguage();
             assert('' !== $language);
+
             return $language;
         }
 
         /** @psalm-suppress DeprecatedMethod */
         $language = $metaModel->getFallbackLanguage() ?? 'en';
         assert('' !== $language);
+
         return $language;
     }
 }
