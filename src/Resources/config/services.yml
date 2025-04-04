@@ -6,3 +6,7 @@ services:
             - '@metamodels.table_manipulator'
         tags:
             - { name: metamodels.attribute_factory }
+
+    MetaModels\AttributeTranslatedSelectBundle\Schema\DoctrineSchemaGenerator:
+        tags:
+            - { name: 'metamodels.schema-generator.doctrine' }
